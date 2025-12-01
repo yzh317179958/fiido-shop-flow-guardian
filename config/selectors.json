@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "platform": "shopify",
+  "base_selectors": {
+    "product_title": ".product-title, h1.product__title, [data-testid='product-title']",
+    "product_price": ".product-price, .price, [data-testid='product-price']",
+    "add_to_cart_button": "button[name='add'], button:has-text('Add to Cart'), .btn-add-to-cart",
+    "cart_count": ".cart-count, .cart-item-count, [data-cart-count]",
+    "cart_drawer": ".cart-drawer, #CartDrawer",
+    "checkout_button": "button:has-text('Checkout'), a[href*='checkout']"
+  },
+  "variant_selectors": {
+    "color": ".color-swatch, [data-option='Color'] button",
+    "size": ".size-option, [data-option='Size'] button"
+  },
+  "checkout_selectors": {
+    "email": "#email, input[name='email']",
+    "first_name": "#firstName, input[name='firstName']",
+    "last_name": "#lastName, input[name='lastName']",
+    "address": "#address1, input[name='address1']",
+    "city": "#city, input[name='city']",
+    "postal_code": "#zip, input[name='postalCode']",
+    "country": "#country, select[name='countryCode']"
+  }
+}
