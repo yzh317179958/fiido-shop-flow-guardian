@@ -1,0 +1,176 @@
+name: Daily E2E Test
+
+on:
+  schedule:
+    # 每日凌晨 2 点 (UTC) 运行，北京时间 10:00
+    - cron: '0 2 * * *'
+
+  # 支持手动触发
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: '测试范围'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - e2e
+          - integration
+          - unit
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Create necessary directories
+        run: |
+          mkdir -p data screenshots reports
+
+      - name: Discover products
+        run: |
+          python scripts/discover_products.py --max-products 50
+        continue-on-error: true
+
+      - name: Run tests
+        id: tests
+        run: |
+          SCOPE="${{ github.event.inputs.test_scope || 'all' }}"
+
+          if [ "$SCOPE" = "all" ]; then
+            pytest tests/ -v -n 4 \
+              --html=reports/test-report.html \
+              --self-contained-html \
+              --maxfail=10
+          elif [ "$SCOPE" = "e2e" ]; then
+            pytest tests/e2e/ -v -n 2 \
+              --html=reports/e2e-report.html \
+              --self-contained-html
+          elif [ "$SCOPE" = "integration" ]; then
+            pytest tests/integration/ -v \
+              --html=reports/integration-report.html \
+              --self-contained-html
+          else
+            pytest tests/unit/ -v \
+              --html=reports/unit-report.html \
+              --self-contained-html
+          fi
+        continue-on-error: true
+
+      - name: Collect test results
+        if: always()
+        run: |
+          python scripts/collect_test_results.py \
+            --output reports/test-results.json
+
+      - name: Generate AI report
+        if: always()
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/generate_universal_ai_report.py \
+            --provider deepseek \
+            --output reports/ai-report.md
+        continue-on-error: true
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            reports/
+            screenshots/
+          retention-days: 30
+
+      - name: Upload test results summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ github.run_number }}
+          path: reports/test-results.json
+          retention-days: 90
+
+      - name: Check test results and alert
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          if [ -f "scripts/send_alerts.py" ]; then
+            python scripts/send_alerts.py \
+              --channel slack \
+              --results-file reports/test-results.json
+          else
+            echo "⚠️ Alert script not found, skipping alerts"
+          fi
+        continue-on-error: true
+
+      - name: Comment on commit (if failed)
+        if: failure() && github.event_name == 'push'
+        uses: peter-evans/commit-comment@v3
+        with:
+          body: |
+            🚨 **Daily E2E Test Failed**
+
+            测试运行失败，请查看详细报告。
+
+            - 运行编号: ${{ github.run_number }}
+            - 触发方式: ${{ github.event_name }}
+            - 查看报告: [Test Reports](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+      - name: Create issue on repeated failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            // 检查是否有测试结果文件
+            if (!fs.existsSync('reports/test-results.json')) {
+              console.log('No test results found');
+              return;
+            }
+
+            const results = JSON.parse(fs.readFileSync('reports/test-results.json', 'utf8'));
+
+            // 仅在通过率低于 80% 时创建 Issue
+            if (results.pass_rate < 0.8) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Daily Test Failed - Pass Rate: ${(results.pass_rate * 100).toFixed(1)}%`,
+                body: `## 测试失败报告
+
+                **运行编号**: ${{ github.run_number }}
+                **触发时间**: ${new Date().toISOString()}
+                **通过率**: ${(results.pass_rate * 100).toFixed(1)}%
+
+                ### 统计信息
+                - 总测试数: ${results.total}
+                - 通过: ${results.passed}
+                - 失败: ${results.failed}
+                - 跳过: ${results.skipped}
+
+                ### 查看详细报告
+                [测试报告](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+                请尽快查看并修复失败的测试。`,
+                labels: ['bug', 'test-failure', 'automated']
+              });
+            }

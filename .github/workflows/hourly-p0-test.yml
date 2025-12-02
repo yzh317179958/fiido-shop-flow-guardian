@@ -1,0 +1,108 @@
+name: Hourly P0 Test
+
+on:
+  schedule:
+    # 每小时运行一次（工作时间 9:00-18:00 UTC）
+    - cron: '0 9-18 * * *'
+
+  # 支持手动触发
+  workflow_dispatch:
+
+jobs:
+  p0-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Create necessary directories
+        run: |
+          mkdir -p data screenshots reports
+
+      - name: Load product data
+        run: |
+          # 如果没有商品数据，先发现商品
+          if [ ! -f "data/discovered_products.json" ]; then
+            echo "No product data found, discovering products..."
+            python scripts/discover_products.py --max-products 20
+          else
+            echo "Using existing product data"
+          fi
+
+      - name: Run P0 priority tests
+        id: p0_tests
+        run: |
+          pytest tests/ -v \
+            --priority=P0 \
+            -n 2 \
+            --html=reports/p0-test-report.html \
+            --self-contained-html \
+            --maxfail=5
+        continue-on-error: true
+
+      - name: Collect test results
+        if: always()
+        run: |
+          python scripts/collect_test_results.py \
+            --output reports/p0-results.json
+
+      - name: Quick AI summary
+        if: always()
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/generate_universal_ai_report.py \
+            --provider deepseek \
+            --summary-only \
+            --output reports/p0-summary.md
+        continue-on-error: true
+
+      - name: Upload P0 test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-reports-${{ github.run_number }}
+          path: |
+            reports/p0-*.html
+            reports/p0-*.json
+            reports/p0-*.md
+            screenshots/
+          retention-days: 7
+
+      - name: Alert on P0 failure
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          # 发送紧急告警
+          if [ -f "scripts/send_alerts.py" ]; then
+            python scripts/send_alerts.py \
+              --channel slack \
+              --results-file reports/p0-results.json \
+              --priority urgent
+          fi
+
+          # 输出失败信息
+          echo "::error::🚨 P0 核心测试失败！请立即检查。"
+        continue-on-error: true
+
+      - name: Set workflow status
+        if: always()
+        run: |
+          if [ "${{ steps.p0_tests.outcome }}" = "failure" ]; then
+            echo "P0_TEST_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi

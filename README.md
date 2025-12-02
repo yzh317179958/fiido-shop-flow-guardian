@@ -6,6 +6,8 @@
 [![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Test Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)]()
+[![Daily Test](https://github.com/yzh317179958/fiido-shop-flow-guardian/actions/workflows/daily-test.yml/badge.svg)](https://github.com/yzh317179958/fiido-shop-flow-guardian/actions/workflows/daily-test.yml)
+[![P0 Test](https://github.com/yzh317179958/fiido-shop-flow-guardian/actions/workflows/hourly-p0-test.yml/badge.svg)](https://github.com/yzh317179958/fiido-shop-flow-guardian/actions/workflows/hourly-p0-test.yml)
 
 ## 项目简介
 
@@ -123,6 +125,54 @@ playwright install chromium
 **推荐使用 DeepSeek**: 每天500万 tokens 免费额度，足够生成1000+次报告！
 
 详细使用指南: [DeepSeek 快速开始](docs/quickstart-deepseek.md)
+
+## CI/CD 自动化 🚀
+
+### GitHub Actions 工作流
+
+项目已集成 GitHub Actions 自动化测试，无需手动运行：
+
+| 工作流 | 触发条件 | 测试范围 | 频率 |
+|--------|---------|---------|------|
+| **Daily Test** | 每日凌晨 2 点 (UTC) | 全量测试 | 每日 1 次 |
+| **P0 Test** | 每小时（工作时间） | 核心商品测试 | 每小时 1 次 |
+| **PR Test** | Pull Request | 单元+集成+烟雾测试 | PR 触发 |
+
+### 自动化功能
+
+- ✅ **定时测试**: 每日/每小时自动执行
+- ✅ **测试报告**: 自动生成并上传到 Artifacts
+- ✅ **AI 分析**: 自动生成智能报告
+- ✅ **失败告警**: Slack/邮件通知（需配置）
+- ✅ **PR 检查**: 代码质量门禁
+
+### 配置 GitHub Secrets
+
+在 GitHub 仓库的 Settings > Secrets and variables > Actions 中添加：
+
+| Secret 名称 | 说明 | 是否必需 |
+|------------|------|---------|
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 | ✅ 必需（AI 报告） |
+| `SLACK_WEBHOOK_URL` | Slack Webhook URL | ⏳ 可选（告警通知） |
+| `SMTP_USER` | 邮箱用户名 | ⏳ 可选（邮件告警） |
+| `SMTP_PASSWORD` | 邮箱密码 | ⏳ 可选（邮件告警） |
+
+### 手动触发测试
+
+在 GitHub Actions 页面可手动触发测试：
+
+1. 访问 https://github.com/YOUR_USERNAME/fiido-shop-flow-guardian/actions
+2. 选择工作流（Daily Test / P0 Test）
+3. 点击 "Run workflow"
+4. 选择测试范围并运行
+
+### 查看测试报告
+
+测试完成后，可在 Actions 页面下载报告：
+
+1. 进入对应的 workflow run
+2. 在 "Artifacts" 部分下载报告
+3. 解压查看 HTML 报告和 AI 分析
 
 ```
 
