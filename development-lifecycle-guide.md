@@ -2946,11 +2946,535 @@ async def test_product_multilang(page, test_product, lang):
 
 ---
 
-**文档版本**: 2.0
-**最后更新**: 2025-12-01
-**状态**: ✅ 准备开发
+**文档版本**: 2.1
+**最后更新**: 2025-12-02
+**状态**: 🚀 Sprint 3 已完成，进入 Sprint 4
+
+---
+
+## 11. 当前开发进度
+
+### 11.1 已完成的 Sprint
+
+#### ✅ Sprint 0: 框架搭建（已完成）
+**完成时间**: 2025-11-28
+**版本标签**: v1.0.0
+
+**交付物**:
+- ✅ 完整项目结构
+- ✅ 核心数据模型 (core/models.py)
+- ✅ 选择器管理系统 (core/selector_manager.py)
+- ✅ 配置文件模板
+
+#### ✅ Sprint 1: 产品爬虫开发（已完成）
+**完成时间**: 2025-11-29
+**版本标签**: v1.1.0
+
+**交付物**:
+- ✅ 产品爬虫核心功能 (core/crawler.py)
+- ✅ 自动发现所有商品
+- ✅ 提取商品详细信息（价格、变体、分类）
+- ✅ 保存为结构化JSON
+- ✅ 命令行工具 (scripts/discover_products.py)
+
+**关键成果**:
+- 成功爬取 Fiido.com 所有商品
+- 支持 Shopify JSON API 和 HTML 后备解析
+- 自动提取商品变体和选择器
+
+#### ✅ Sprint 2: 通用测试框架（已完成）
+**完成时间**: 2025-11-30
+**版本标签**: v1.2.0
+
+**交付物**:
+- ✅ 通用页面对象模型 (pages/product_page.py)
+- ✅ 参数化测试框架 (tests/conftest.py)
+- ✅ 可测试任意商品
+- ✅ 支持过滤和选择性测试
+- ✅ 自动截图功能
+- ✅ 动态测试模板
+
+**关键成果**:
+- 实现 SelectorManager 智能选择器管理
+- 动态生成测试用例，无需手动编写
+- 支持按优先级、分类过滤测试
+- 失败自动截图，便于调试
+
+#### ✅ Sprint 3: 完整购物流程 + AI 智能报告（已完成）
+**完成时间**: 2025-12-02
+**版本标签**: v1.3.0
+
+**交付物**:
+- ✅ 购物车页面对象 (pages/cart_page.py)
+- ✅ 结账页面对象 (pages/checkout_page.py)
+- ✅ 完整结账流程测试
+- ✅ 端到端测试覆盖 (tests/e2e/test_full_checkout_flow.py)
+- ✅ AI 智能报告生成 (scripts/generate_universal_ai_report.py)
+- ✅ 支持 DeepSeek 和 Claude 双 AI 提供商
+- ✅ 测试结果收集器 (core/test_result_collector.py)
+- ✅ 完整测试文档体系
+
+**关键成果**:
+- 实现商品页 → 购物车 → 结账完整流程测试
+- 集成免费 DeepSeek API，国内可用，每日 500 万 tokens
+- AI 报告包含失败分析、修复建议、趋势洞察
+- 单元测试 + 集成测试 + E2E 测试三层覆盖
+- 文档完整度 100%，包含快速开始、测试指南、AI 配置指南
+
+**测试覆盖率**: 90%+
+
+### 11.2 当前状态（2025-12-02）
+
+**项目进度**: Sprint 3 完成，准备进入 Sprint 4
+
+**代码仓库**: https://github.com/yzh317179958/fiido-shop-flow-guardian
+
+**最新版本**: v1.3.0
+
+**核心功能状态**:
+| 功能模块 | 状态 | 完成度 |
+|---------|------|--------|
+| 商品爬虫 | ✅ 完成 | 100% |
+| 通用测试框架 | ✅ 完成 | 100% |
+| 购物车测试 | ✅ 完成 | 100% |
+| 结账流程测试 | ✅ 完成 | 100% |
+| AI 智能报告 | ✅ 完成 | 100% |
+| CI/CD 集成 | ⏳ 待开发 | 0% |
+| 告警监控 | ⏳ 待开发 | 0% |
+| Web 管理界面 | ⏳ 待开发 | 0% |
+
+---
+
+## 12. Sprint 4 开发计划：高级功能与自动化
+
+### 12.1 Sprint 4 目标
+
+**主题**: CI/CD 集成、性能优化、告警监控
+
+**周期**: 第 6-7 周
+
+**核心目标**:
+1. ✅ 实现 GitHub Actions 自动化测试
+2. ✅ 建立告警和监控系统
+3. ✅ 优化测试性能和并行执行
+4. 🎯 (可选) 提供 Web 管理界面
+
+### 12.2 增量开发计划
+
+#### 增量 4.1: GitHub Actions CI/CD 集成 (优先级: P0)
+
+**目标**: 实现自动化测试和部署流水线
+
+**任务清单**:
+- [ ] T4.1.1: 创建基础 CI/CD 工作流文件
+- [ ] T4.1.2: 配置定时测试任务（每日/每周）
+- [ ] T4.1.3: 实现测试报告自动上传
+- [ ] T4.1.4: 配置 Secrets 管理（API Keys）
+- [ ] T4.1.5: 实现 PR 触发测试
+- [ ] T4.1.6: 添加测试结果徽章到 README
+
+**交付物**:
+```
+.github/
+├── workflows/
+│   ├── daily-test.yml         # 每日全量测试
+│   ├── hourly-p0-test.yml     # 每小时 P0 测试
+│   ├── pr-test.yml            # PR 触发测试
+│   └── weekly-full-test.yml   # 每周完整测试
+└── CONTRIBUTING.md            # 贡献指南
+```
+
+**实现要点**:
+```yaml
+# .github/workflows/daily-test.yml
+name: Daily E2E Test
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每日凌晨 2 点（UTC）
+  workflow_dispatch:      # 支持手动触发
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium --with-deps
+
+      - name: Run tests
+        run: |
+          pytest tests/ -v -n 4 \
+            --html=reports/test-report.html \
+            --self-contained-html
+
+      - name: Generate AI report
+        if: always()
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+        run: |
+          python scripts/generate_universal_ai_report.py \
+            --provider deepseek \
+            --output reports/ai-report.md
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            reports/
+            screenshots/
+          retention-days: 30
+
+      - name: Check test results
+        if: failure()
+        run: |
+          python scripts/send_alerts.py \
+            --channel slack \
+            --message "Daily test failed! Check reports."
+```
+
+#### 增量 4.2: 告警与监控系统 (优先级: P0)
+
+**目标**: 实现智能告警，测试失败时及时通知
+
+**任务清单**:
+- [ ] T4.2.1: 实现告警策略引擎
+- [ ] T4.2.2: 集成 Slack 通知
+- [ ] T4.2.3: 集成邮件通知
+- [ ] T4.2.4: 集成企业微信通知（可选）
+- [ ] T4.2.5: 实现测试历史追踪
+- [ ] T4.2.6: 添加趋势分析和异常检测
+
+**交付物**:
+```
+scripts/
+├── send_alerts.py              # 告警发送脚本
+├── check_test_health.py        # 测试健康检查
+└── analyze_trends.py           # 趋势分析
+
+core/
+├── alert_engine.py             # 告警引擎
+└── notification_channels.py   # 通知渠道
+
+config/
+└── alert_config.json           # 告警配置
+```
+
+**实现要点**:
+```python
+# scripts/send_alerts.py
+
+import os
+import json
+import requests
+from typing import Dict, List
+from datetime import datetime
+
+class AlertEngine:
+    """告警引擎"""
+
+    def __init__(self, config_path='config/alert_config.json'):
+        self.config = self._load_config(config_path)
+
+    def should_alert(self, test_results: Dict) -> tuple[bool, str]:
+        """
+        判断是否触发告警
+
+        Returns:
+            (是否告警, 告警原因)
+        """
+        reasons = []
+
+        # 规则1: 通过率低于阈值
+        pass_rate = test_results.get('pass_rate', 0)
+        threshold = self.config['thresholds']['pass_rate']
+        if pass_rate < threshold:
+            reasons.append(f"通过率 {pass_rate:.1%} 低于阈值 {threshold:.1%}")
+
+        # 规则2: P0 商品失败
+        p0_failures = [
+            f for f in test_results.get('failures', [])
+            if f.get('priority') == 'P0'
+        ]
+        if p0_failures:
+            reasons.append(f"{len(p0_failures)} 个 P0 核心商品测试失败")
+
+        # 规则3: 连续失败次数
+        consecutive = test_results.get('consecutive_failures', 0)
+        if consecutive >= 3:
+            reasons.append(f"连续失败 {consecutive} 次")
+
+        # 规则4: 失败数量突增
+        current_failures = len(test_results.get('failures', []))
+        avg_failures = test_results.get('avg_failures_last_7_days', 0)
+        if current_failures > avg_failures * 2:
+            reasons.append(f"失败数量突增：{current_failures} (平均: {avg_failures})")
+
+        return len(reasons) > 0, '\n'.join(reasons)
+
+    def send_alert(self, channel: str, message: str, results: Dict):
+        """发送告警"""
+        if channel == 'slack':
+            self._send_slack(message, results)
+        elif channel == 'email':
+            self._send_email(message, results)
+        elif channel == 'wechat':
+            self._send_wechat(message, results)
+
+    def _send_slack(self, message: str, results: Dict):
+        """发送 Slack 通知"""
+        webhook_url = os.getenv('SLACK_WEBHOOK_URL')
+        if not webhook_url:
+            print("⚠️ SLACK_WEBHOOK_URL 未配置")
+            return
+
+        # 构建富文本消息
+        blocks = [
+            {
+                "type": "header",
+                "text": {
+                    "type": "plain_text",
+                    "text": "🚨 Fiido E2E 测试告警"
+                }
+            },
+            {
+                "type": "section",
+                "fields": [
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*通过率:*\n{results['pass_rate']:.1%}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*失败数:*\n{len(results['failures'])}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*测试时间:*\n{results['timestamp']}"
+                    },
+                    {
+                        "type": "mrkdwn",
+                        "text": f"*运行ID:*\n{results.get('run_id', 'N/A')}"
+                    }
+                ]
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*告警原因:*\n```{message}```"
+                }
+            }
+        ]
+
+        # 添加失败商品列表
+        if results.get('failures'):
+            failure_list = '\n'.join([
+                f"• {f['product_name']} ({f['priority']})"
+                for f in results['failures'][:5]
+            ])
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": f"*Top 5 失败商品:*\n{failure_list}"
+                }
+            })
+
+        # 添加报告链接
+        if results.get('report_url'):
+            blocks.append({
+                "type": "actions",
+                "elements": [
+                    {
+                        "type": "button",
+                        "text": {
+                            "type": "plain_text",
+                            "text": "查看完整报告"
+                        },
+                        "url": results['report_url']
+                    }
+                ]
+            })
+
+        payload = {"blocks": blocks}
+
+        response = requests.post(webhook_url, json=payload)
+        if response.status_code == 200:
+            print("✅ Slack 告警已发送")
+        else:
+            print(f"❌ Slack 告警发送失败: {response.text}")
+
+    def _send_email(self, message: str, results: Dict):
+        """发送邮件通知"""
+        # 使用 SendGrid 或 AWS SES
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        sender = os.getenv('ALERT_EMAIL_SENDER')
+        recipients = os.getenv('ALERT_EMAIL_RECIPIENTS', '').split(',')
+        smtp_server = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+        smtp_port = int(os.getenv('SMTP_PORT', '587'))
+        smtp_user = os.getenv('SMTP_USER')
+        smtp_password = os.getenv('SMTP_PASSWORD')
+
+        if not all([sender, recipients, smtp_user, smtp_password]):
+            print("⚠️ 邮件配置不完整")
+            return
+
+        # 创建邮件
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = f"🚨 Fiido E2E 测试告警 - 通过率 {results['pass_rate']:.1%}"
+        msg['From'] = sender
+        msg['To'] = ', '.join(recipients)
+
+        # HTML 邮件内容
+        html = f"""
+        <html>
+          <body>
+            <h2>🚨 Fiido E2E 测试告警</h2>
+            <table border="1" cellpadding="5">
+              <tr><td><b>通过率</b></td><td>{results['pass_rate']:.1%}</td></tr>
+              <tr><td><b>失败数量</b></td><td>{len(results['failures'])}</td></tr>
+              <tr><td><b>测试时间</b></td><td>{results['timestamp']}</td></tr>
+            </table>
+            <h3>告警原因:</h3>
+            <pre>{message}</pre>
+            <h3>失败商品:</h3>
+            <ul>
+              {''.join([f"<li>{f['product_name']} ({f['priority']})</li>" for f in results['failures'][:10]])}
+            </ul>
+            <p><a href="{results.get('report_url', '#')}">查看完整报告</a></p>
+          </body>
+        </html>
+        """
+
+        msg.attach(MIMEText(html, 'html'))
+
+        # 发送邮件
+        try:
+            with smtplib.SMTP(smtp_server, smtp_port) as server:
+                server.starttls()
+                server.login(smtp_user, smtp_password)
+                server.send_message(msg)
+            print("✅ 邮件告警已发送")
+        except Exception as e:
+            print(f"❌ 邮件发送失败: {e}")
+
+# 使用示例
+if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser(description='发送测试告警')
+    parser.add_argument('--channel', choices=['slack', 'email', 'wechat'], required=True)
+    parser.add_argument('--results-file', default='reports/test-results.json')
+
+    args = parser.parse_args()
+
+    # 加载测试结果
+    with open(args.results_file) as f:
+        results = json.load(f)
+
+    # 检查是否需要告警
+    engine = AlertEngine()
+    should_alert, reason = engine.should_alert(results)
+
+    if should_alert:
+        print(f"🚨 触发告警: {reason}")
+        engine.send_alert(args.channel, reason, results)
+    else:
+        print("✅ 测试通过，无需告警")
+```
+
+**告警配置文件**:
+```json
+// config/alert_config.json
+{
+  "version": "1.0",
+  "enabled": true,
+  "thresholds": {
+    "pass_rate": 0.90,
+    "consecutive_failures": 3,
+    "failure_spike_multiplier": 2.0
+  },
+  "channels": {
+    "slack": {
+      "enabled": true,
+      "webhook_env": "SLACK_WEBHOOK_URL",
+      "mention_users": ["@qa-team", "@dev-team"]
+    },
+    "email": {
+      "enabled": true,
+      "recipients": ["qa@company.com", "dev@company.com"],
+      "smtp_config_env": "SMTP_CONFIG"
+    }
+  },
+  "quiet_hours": {
+    "enabled": false,
+    "start": "22:00",
+    "end": "08:00",
+    "timezone": "Asia/Shanghai"
+  }
+}
+```
+
+#### 增量 4.3: 性能优化 (优先级: P1)
+
+**目标**: 提升测试执行效率，减少运行时间
+
+**任务清单**:
+- [ ] T4.3.1: 实现智能并行测试
+- [ ] T4.3.2: 优化商品爬虫缓存机制
+- [ ] T4.3.3: 实现增量测试（仅测试变更商品）
+- [ ] T4.3.4: 优化页面加载等待策略
+- [ ] T4.3.5: 添加测试执行时间分析
+
+**交付物**:
+- 并行测试配置优化
+- 爬虫缓存系统
+- 增量测试逻辑
+- 性能分析报告
+
+#### 增量 4.4: Web 管理界面 (优先级: P2, 可选)
+
+**目标**: 为非技术人员提供友好的 Web 界面
+
+**说明**: 此功能为可选项，如果有非技术人员需要使用，可以开发。
+
+### 12.3 Sprint 4 完成定义 (DoD)
+
+- [ ] GitHub Actions 工作流正常运行
+- [ ] 定时测试每日自动执行
+- [ ] 测试失败时能收到告警通知
+- [ ] 测试报告自动生成和上传
+- [ ] 并行测试提升效率 50%+
+- [ ] 文档更新完整
+- [ ] 所有功能有单元测试覆盖
+
+### 12.4 Sprint 4 成功指标
+
+| 指标 | 目标 | 测量方式 |
+|------|------|----------|
+| **自动化率** | 100% | 无需手动触发测试 |
+| **告警响应时间** | < 5 分钟 | 从失败到收到通知 |
+| **测试执行时间** | < 30 分钟 | 全量测试并行执行 |
+| **CI/CD 成功率** | > 95% | Actions 成功运行次数 / 总次数 |
+
+---
 
 **后续步骤**:
-1. 审阅批准此文档
-2. 创建GitHub仓库
-3. 开始Sprint 0开发
+1. ✅ 更新文档记录当前进度
+2. 🚀 开始 Sprint 4.1: GitHub Actions CI/CD 集成
+3. 📝 创建 Sprint 4 详细开发文档

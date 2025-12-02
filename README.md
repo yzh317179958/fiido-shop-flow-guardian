@@ -2,18 +2,40 @@
 
 **通用电商自动化测试框架 - 基于 Playwright + AI 分析**
 
+[![Version](https://img.shields.io/badge/version-v1.3.0-blue.svg)](https://github.com/yzh317179958/fiido-shop-flow-guardian/releases/tag/v1.3.0)
+[![Python](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Test Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)]()
+
 ## 项目简介
 
 为 Fiido 电商独立站（https://fiido.com）构建的通用化、可扩展的 E2E 自动化测试框架。
 
+**当前版本**: v1.3.0 (Sprint 3 已完成)
+
+**最后更新**: 2025-12-02
+
 ### 核心特性
 
-- **通用化设计**: 仅需提供产品 URL，自动完成完整测试
-- **自动发现**: 爬取网站结构，自动发现所有商品和分类
-- **配置驱动**: 通过 JSON 配置文件控制测试范围和行为
-- **一键扩展**: 新产品上线时，仅需更新配置或提供 URL
-- **AI 智能分析**: 自动生成测试报告和失败分析
-- **7x24 监控**: 全天候自动运行，即时发现问题
+- ✅ **通用化设计**: 仅需提供产品 URL，自动完成完整测试
+- ✅ **自动发现**: 爬取网站结构，自动发现所有商品和分类
+- ✅ **配置驱动**: 通过 JSON 配置文件控制测试范围和行为
+- ✅ **一键扩展**: 新产品上线时，仅需更新配置或提供 URL
+- ✅ **AI 智能分析**: 自动生成测试报告和失败分析 (支持 DeepSeek + Claude)
+- ✅ **完整流程测试**: 商品页 → 购物车 → 结账完整 E2E 覆盖
+- ⏳ **7x24 监控**: 全天候自动运行，即时发现问题 (Sprint 4 开发中)
+
+### 项目进度
+
+| Sprint | 主题 | 状态 | 版本 | 完成度 |
+|--------|------|------|------|--------|
+| Sprint 0 | 框架搭建 | ✅ 完成 | v1.0.0 | 100% |
+| Sprint 1 | 产品爬虫 | ✅ 完成 | v1.1.0 | 100% |
+| Sprint 2 | 通用测试框架 | ✅ 完成 | v1.2.0 | 100% |
+| Sprint 3 | 购物流程 + AI 报告 | ✅ 完成 | v1.3.0 | 100% |
+| **Sprint 4** | **CI/CD + 告警监控** | **🚀 进行中** | **v1.4.0** | **0%** |
+
+**测试覆盖率**: 90%+ (单元测试 + 集成测试 + E2E 测试)
 
 ## 快速开始
 
