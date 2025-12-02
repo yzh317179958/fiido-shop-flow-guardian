@@ -45,13 +45,30 @@ playwright install chromium
 ### 使用示例
 
 ```bash
-# 发现所有商品
-python scripts/discover_products.py
+# 1. 发现所有商品（生成测试数据）
+./run.sh python scripts/discover_products.py
 
-# 运行测试
-pytest tests/test_all_products.py -v
+# 2. 运行所有测试
+./run_tests.sh
 
-# 生成 AI 报告
+# 3. 运行 E2E 测试
+./run_tests.sh tests/e2e/
+
+# 4. 根据优先级过滤测试
+./run_tests.sh --priority=P0        # 仅测试 P0 优先级商品
+./run_tests.sh --priority=P1        # 仅测试 P1 优先级商品
+
+# 5. 根据分类过滤测试
+./run_tests.sh --category=bike      # 仅测试自行车类商品
+./run_tests.sh --category=scooter   # 仅测试滑板车类商品
+
+# 6. 测试单个商品
+./run_tests.sh --product-id=fiido-d11
+
+# 7. 指定商品数据文件
+./run_tests.sh --product-file=data/demo_products.json
+
+# 生成 AI 报告（待实现）
 export CLAUDE_API_KEY="your-key"
 python scripts/generate_ai_report.py
 ```
