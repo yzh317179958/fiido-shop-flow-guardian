@@ -1,4 +1,4 @@
-# Fiido Shop Flow Guardian
+# Shop Flow Guardian
 
 **通用电商自动化测试框架 - 基于 Playwright + AI 分析**
 
@@ -11,7 +11,7 @@
 
 ## 项目简介
 
-为 Fiido 电商独立站（https://fiido.com）构建的通用化、可扩展的 E2E 自动化测试框架。
+为电商独立站（https://fiido.com）构建的通用化、可扩展的 E2E 自动化测试框架。
 
 **当前版本**: v1.4.0 (Sprint 4 已完成)
 
