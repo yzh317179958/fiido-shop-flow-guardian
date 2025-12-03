@@ -11,7 +11,7 @@
 
 ## 项目简介
 
-为电商独立站（https://fiido.com）构建的通用化、可扩展的 E2E 自动化测试框架。
+为电商独立站构建的通用化、可扩展的 E2E 自动化测试框架。
 
 **当前版本**: v1.4.0 (Sprint 4 已完成)
 
@@ -171,7 +171,7 @@ playwright install chromium
 
 在 GitHub Actions 页面可手动触发测试：
 
-1. 访问 https://github.com/YOUR_USERNAME/fiido-shop-flow-guardian/actions
+1. 访问 https://github.com/YOUR_USERNAME/shop-flow-guardian/actions
 2. 选择工作流（Daily Test / P0 Test）
 3. 点击 "Run workflow"
 4. 选择测试范围并运行
