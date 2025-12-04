@@ -1,0 +1,130 @@
+{
+  "product_id": "test-product-with-bug",
+  "product_name": "模拟测试商品",
+  "test_mode": "full",
+  "status": "passed",
+  "duration": 25.5,
+  "timestamp": "2025-12-04T17:52:26.853387",
+  "steps": [
+    {
+      "number": 1,
+      "name": "测试步骤1",
+      "description": "这是第1个测试步骤",
+      "status": "passed",
+      "message": "步骤1执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 2,
+      "name": "测试步骤2",
+      "description": "这是第2个测试步骤",
+      "status": "passed",
+      "message": "步骤2执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 3,
+      "name": "测试步骤3",
+      "description": "这是第3个测试步骤",
+      "status": "passed",
+      "message": "步骤3执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 4,
+      "name": "测试步骤4",
+      "description": "这是第4个测试步骤",
+      "status": "passed",
+      "message": "步骤4执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 5,
+      "name": "测试步骤5",
+      "description": "这是第5个测试步骤",
+      "status": "passed",
+      "message": "步骤5执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 6,
+      "name": "测试步骤6",
+      "description": "这是第6个测试步骤",
+      "status": "passed",
+      "message": "步骤6执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 7,
+      "name": "测试步骤7",
+      "description": "这是第7个测试步骤",
+      "status": "passed",
+      "message": "步骤7执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 8,
+      "name": "测试步骤8",
+      "description": "这是第8个测试步骤",
+      "status": "passed",
+      "message": "步骤8执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 9,
+      "name": "测试步骤9",
+      "description": "这是第9个测试步骤",
+      "status": "passed",
+      "message": "步骤9执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 10,
+      "name": "测试步骤10",
+      "description": "这是第10个测试步骤",
+      "status": "passed",
+      "message": "步骤10执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 11,
+      "name": "测试步骤11",
+      "description": "这是第11个测试步骤",
+      "status": "passed",
+      "message": "步骤11执行成功",
+      "error": null,
+      "duration": 0.0
+    },
+    {
+      "number": 12,
+      "name": "支付流程验证",
+      "description": "验证从购物车到支付页面的完整流程",
+      "status": "passed",
+      "message": "⚠️  购物车页面Checkout按钮正常，但检测到数量调整功能Bug",
+      "error": null,
+      "duration": 0.0,
+      "issue_details": {
+        "scenario": "用户在购物车页面尝试调整商品数量",
+        "operation": "点击数量加号按钮，期望数量从 1 增加",
+        "problem": "数量未发生变化（保持为 1），同时触发了JavaScript错误",
+        "root_cause": "购物车UI更新逻辑存在Bug：代码尝试访问不存在的DOM元素（querySelector返回null），导致数量更新失败",
+        "js_errors": [
+          "TypeError: can't access property 'length', myDiv.querySelector(...) is null at theme.js:2023",
+          "Uncaught TypeError: Cannot read properties of null (reading 'classList')",
+          "ReferenceError: quantityElement is not defined"
+        ]
+      }
+    }
+  ],
+  "errors": []
+}

@@ -528,6 +528,33 @@ function updateTestSteps(steps) {
             durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
         }
 
+        // 生成问题详情HTML（如果存在）
+        let issueDetailsHtml = '';
+        if (step.issue_details) {
+            const details = step.issue_details;
+            const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
+                ? `<div class="mt-2"><strong>JavaScript错误:</strong>
+                     <ul class="mb-0 mt-1">
+                       ${details.js_errors.slice(0, 3).map(err => `<li class="text-danger small">${escapeHtml(err)}</li>`).join('')}
+                       ${details.js_errors.length > 3 ? `<li class="text-muted small">...还有 ${details.js_errors.length - 3} 个错误</li>` : ''}
+                     </ul>
+                   </div>`
+                : '';
+
+            issueDetailsHtml = `
+                <div class="alert alert-warning mt-2 mb-0" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
+                    <h6 class="alert-heading mb-2">📋 问题详情</h6>
+                    <div class="small">
+                        <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
+                        <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
+                        <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
+                        <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
+                        ${jsErrorsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
         return `
             <div class="card ${statusClass}">
                 <div class="card-body py-3">
@@ -541,6 +568,7 @@ function updateTestSteps(steps) {
                             ${step.description ? `<div class="step-description">📝 ${escapeHtml(step.description)}</div>` : ''}
                             ${step.result ? `<div class="step-result">💡 ${escapeHtml(step.result)}</div>` : ''}
                             ${step.error ? `<div class="step-error">⚠️ ${escapeHtml(step.error)}</div>` : ''}
+                            ${issueDetailsHtml}
                         </div>
                         <div>
                             ${statusBadge}
@@ -671,6 +699,33 @@ function showDetailedResults(result) {
                     durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
                 }
 
+                // 生成问题详情HTML（如果存在）
+                let issueDetailsHtml = '';
+                if (step.issue_details) {
+                    const details = step.issue_details;
+                    const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
+                        ? `<div class="mt-2"><strong>JavaScript错误:</strong>
+                             <ul class="mb-0 mt-1">
+                               ${details.js_errors.slice(0, 3).map(err => `<li class="text-danger small">${escapeHtml(err)}</li>`).join('')}
+                               ${details.js_errors.length > 3 ? `<li class="text-muted small">...还有 ${details.js_errors.length - 3} 个错误</li>` : ''}
+                             </ul>
+                           </div>`
+                        : '';
+
+                    issueDetailsHtml = `
+                        <div class="alert alert-warning mt-2 mb-0" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
+                            <h6 class="alert-heading mb-2">📋 问题详情</h6>
+                            <div class="small">
+                                <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
+                                <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
+                                <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
+                                <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
+                                ${jsErrorsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 return `
                     <div class="card ${statusClass} mb-2">
                         <div class="card-body py-3">
@@ -684,6 +739,7 @@ function showDetailedResults(result) {
                                     ${step.description ? `<div class="step-description">📝 ${escapeHtml(step.description)}</div>` : ''}
                                     ${step.result ? `<div class="step-result">💡 ${escapeHtml(step.result)}</div>` : ''}
                                     ${step.error ? `<div class="step-error">⚠️ ${escapeHtml(step.error)}</div>` : ''}
+                                    ${issueDetailsHtml}
                                 </div>
                                 <div>
                                     ${statusBadge}

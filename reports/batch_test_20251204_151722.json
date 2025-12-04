@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-12-04T15:17:22.997428",
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "error": 0,
+  "total_duration": 12.069947,
+  "results": [
+    {
+      "product_id": "bike-rack-pannier-bag",
+      "product_name": "Bike Rack Pannier Bag",
+      "status": "passed",
+      "duration": 12.07,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/bike-rack-pannier-bag",
+          "error": null,
+          "duration": 5.68
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$66.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.09
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.09
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.87
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

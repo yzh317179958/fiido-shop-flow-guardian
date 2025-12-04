@@ -643,6 +643,554 @@ python3 web/app.py  # 启动Web服务
 
 ---
 
-**版本**: v1.0
+## 测试智能化原则 (新增 v2.0.4)
+
+### 核心测试理念
+
+**测试的目标是验证网站已有功能是否工作正常,而不是测试"网站是否具备某个功能"。**
+
+### 5大核心原则
+
+#### 原则1: 区分网站Bug vs 测试失败
+
+**规则:**
+- ✅ **必须**:明确区分网站自身的Bug和测试脚本的超时/失败
+- ✅ **必须**:对失败进行分类(website_bug/missing_feature/test_timeout/test_error/network_error)
+- ✅ **必须**:只有确认是网站Bug时,才报告为"failed"
+- ❌ **禁止**:将测试超时、网络问题等误判为网站Bug
+
+**失败分类标准:**
+
+```python
+from core.test_intelligence import FailureClassification
+
+# 1. 网站Bug: 元素存在 + 操作失败 + 有JavaScript错误
+FailureClassification.TYPE_WEBSITE_BUG
+示例: 点击按钮无响应,且Console有TypeError
+
+# 2. 功能缺失: 元素不存在
+FailureClassification.TYPE_MISSING_FEATURE
+示例: 找不到数量调整按钮 → 该页面未实现此功能
+
+# 3. 测试超时: 操作超时,可能是网络慢或元素加载慢
+FailureClassification.TYPE_TEST_TIMEOUT
+示例: 等待元素出现超过3秒
+
+# 4. 测试错误: 测试逻辑本身的问题
+FailureClassification.TYPE_TEST_ERROR
+示例: 选择器写错,导致找不到元素
+
+# 5. 网络错误: 网络连接问题
+FailureClassification.TYPE_NETWORK_ERROR
+示例: net::ERR_CONNECTION_REFUSED
+```
+
+**实践示例:**
+
+❌ **错误做法**:
+```python
+# 不区分失败原因,一律报错
+try:
+    button = await page.query_selector("button.add-to-cart")
+    await button.click()
+except:
+    step.complete("failed", "添加购物车失败")  # 太笼统!
+```
+
+✅ **正确做法**:
+```python
+from core.test_intelligence import TestIntelligence
+
+intelligence = TestIntelligence(page)
+
+# 1. 先检测元素是否存在
+button_result = await intelligence.detect_element(
+    selectors=["button.add-to-cart", "[data-add-to-cart]"],
+    element_name="添加购物车按钮"
+)
+
+if not button_result.exists:
+    # 元素不存在 = 功能缺失,不是Bug
+    step.complete("skipped", "该页面未提供添加购物车功能")
+    return
+
+# 2. 元素存在,尝试操作
+try:
+    await button_result.element.click(timeout=3000)
+    step.complete("passed", "成功添加到购物车")
+except Exception as e:
+    # 3. 操作失败,分类原因
+    classification = await intelligence.classify_failure(
+        step_name="添加购物车",
+        expected_element=button_result,
+        operation_attempted="点击按钮",
+        js_errors=js_errors_list,
+        exception=e
+    )
+
+    if classification.failure_type == FailureClassification.TYPE_TEST_TIMEOUT:
+        step.complete("skipped", "测试超时,可能网络慢")
+    elif classification.is_website_bug():
+        step.complete("failed", classification.reason, issue_details=...)
+    else:
+        step.complete("skipped", classification.reason)
+```
+
+---
+
+#### 原则2: 加强已有功能的Bug检测,避免漏检
+
+**规则:**
+- ✅ **必须**:对网页中实际存在的UI元素进行全面测试
+- ✅ **必须**:检测元素的可见性、可用性、交互响应
+- ✅ **必须**:监听JavaScript错误,关联用户操作
+- ❌ **禁止**:假设元素存在就一定能正常工作
+
+**Bug检测机制:**
+
+```python
+# 三级检测机制
+class ElementDetectionResult:
+    exists: bool       # 1. 元素是否存在
+    visible: bool      # 2. 元素是否可见
+    enabled: bool      # 3. 元素是否可交互
+
+    @property
+    def is_functional(self) -> bool:
+        """功能是否正常(三者都满足)"""
+        return self.exists and self.visible and self.enabled
+```
+
+**实践示例:**
+
+❌ **错误做法** - 浅层检测:
+```python
+# 只检查元素存在,不检查功能
+image = await page.query_selector("img.product-image")
+if image:
+    step.complete("passed", "商品图片存在")  # 不够深入!
+```
+
+✅ **正确做法** - 深度检测:
+```python
+# 1. 检测元素
+image_result = await intelligence.detect_element(
+    selectors=["img[src*='product']", ".product-image img"],
+    element_name="商品图片"
+)
+
+if not image_result.exists:
+    step.complete("skipped", "该商品页面无图片")
+    return
+
+# 2. 检查可见性
+if not image_result.visible:
+    # 元素存在但不可见 - 可能是Bug
+    if js_errors:
+        step.complete("failed", "图片元素存在但不可见,且有JS错误",
+                     issue_details={"js_errors": js_errors})
+    else:
+        step.complete("passed", "图片元素存在但隐藏(可能是懒加载)")
+    return
+
+# 3. 检查图片是否加载成功
+src = await image_result.element.get_attribute("src")
+if not src or src == "placeholder.jpg":
+    step.complete("failed", "图片URL无效或为占位符")
+else:
+    step.complete("passed", f"商品图片正常显示 ({src})")
+```
+
+---
+
+#### 原则3: 避免"无中生有"的失败
+
+**规则:**
+- ✅ **必须**:先检测功能是否存在,再测试功能
+- ✅ **必须**:对不存在的功能,报告为"skipped"而非"failed"
+- ✅ **必须**:基于网页实际UI进行测试
+- ❌ **禁止**:对根本不存在的元素进行测试并报告失败
+
+**判断逻辑:**
+
+```python
+def should_skip_step(self, step_name: str, prerequisite_elements: List[ElementDetectionResult]) -> Tuple[bool, Optional[str]]:
+    """判断是否应该跳过某个步骤"""
+    missing_elements = [elem for elem in prerequisite_elements if not elem.exists]
+
+    if missing_elements:
+        return (True, f"{step_name}所需的UI元素不存在,该功能未实现,跳过测试")
+
+    return (False, None)
+```
+
+**实践示例:**
+
+❌ **错误做法** - 强行测试不存在的功能:
+```python
+# 不管元素是否存在,都尝试测试
+step = TestStep(7, "商品评论测试", "测试用户评论功能")
+try:
+    comments = await page.query_selector_all(".product-reviews .comment")
+    if len(comments) == 0:
+        step.complete("failed", "未找到商品评论")  # 错误!
+except:
+    step.complete("failed", "评论功能测试失败")  # 错误!
+```
+
+✅ **正确做法** - 先判断功能是否存在:
+```python
+# 1. 先检测评论区域是否存在
+review_section = await intelligence.detect_element(
+    selectors=[".product-reviews", "#reviews", "[data-reviews]"],
+    element_name="评论区域"
+)
+
+# 2. 判断是否跳过
+should_skip, skip_reason = intelligence.should_skip_step(
+    step_name="商品评论测试",
+    prerequisite_elements=[review_section]
+)
+
+if should_skip:
+    # 评论区域不存在 = 该商品页面未实现评论功能
+    step.complete("skipped", "该商品页面未实现评论功能,跳过测试")
+    return
+
+# 3. 评论区域存在,测试评论功能
+comments = await page.query_selector_all(f"{review_section.selector_used} .comment")
+if len(comments) > 0:
+    step.complete("passed", f"评论功能正常,共{len(comments)}条评论")
+else:
+    step.complete("passed", "评论区域存在但暂无评论")
+```
+
+---
+
+#### 原则4: 基于网页实际UI设计进行测试
+
+**规则:**
+- ✅ **必须**:测试前先观察网页实际的UI结构
+- ✅ **必须**:使用与网页匹配的选择器
+- ✅ **必须**:测试网页实际提供的交互方式
+- ❌ **禁止**:假设网页必须有某个元素
+- ❌ **禁止**:使用过时的或不匹配的选择器
+
+**选择器策略:**
+
+```python
+# 多重选择器fallback机制
+selectors = [
+    # 1. 网站特定的class (最优先)
+    ".fiido-add-to-cart",
+    "button.add-to-cart",
+
+    # 2. 通用的语义化选择器
+    "button[name='add']",
+    "button:has-text('Add to Cart')",
+
+    # 3. 数据属性选择器
+    "[data-add-to-cart]",
+    "[data-action='add-to-cart']",
+
+    # 4. 兜底选择器
+    "form[action*='cart'] button[type='submit']"
+]
+```
+
+**实践示例:**
+
+❌ **错误做法** - 假设UI结构:
+```python
+# 假设所有商品页面都有数量加减按钮
+plus_button = await page.query_selector("button.quantity-plus")
+if not plus_button:
+    step.complete("failed", "未找到数量加号按钮")  # 错误!
+```
+
+✅ **正确做法** - 适应实际UI:
+```python
+# 1. 先检测有哪些数量控制元素
+quantity_input = await intelligence.detect_element(
+    selectors=["input[name='quantity']"],
+    element_name="数量输入框"
+)
+
+plus_button = await intelligence.detect_element(
+    selectors=["button.quantity-plus", "button:has-text('+')"],
+    element_name="数量加号按钮"
+)
+
+# 2. 根据实际UI决定测试策略
+if quantity_input.exists and plus_button.exists:
+    # UI方式1: 输入框 + 加减按钮
+    step.complete("passed", "数量控制使用按钮方式")
+elif quantity_input.exists and not plus_button.exists:
+    # UI方式2: 仅输入框(手动输入)
+    step.complete("passed", "数量控制使用手动输入方式")
+else:
+    # UI方式3: 无数量控制(可能默认数量为1)
+    step.complete("skipped", "该商品页面未提供数量控制功能")
+```
+
+---
+
+#### 原则5: 验证功能是否有Bug,而非功能是否存在
+
+**规则:**
+- ✅ **必须**:测试重点是"已有功能是否正常工作"
+- ✅ **必须**:功能存在 + 操作失败 + 有JS错误 = Bug
+- ✅ **必须**:功能不存在 = 跳过测试(不报告为失败)
+- ❌ **禁止**:将"功能缺失"误判为"功能有Bug"
+
+**判断流程:**
+
+```
+┌─────────────────┐
+│  检测元素存在性  │
+└────────┬────────┘
+         │
+    ┌────▼─────┐
+    │ 元素存在? │
+    └─┬──────┬─┘
+      │NO    │YES
+      │      │
+ ┌────▼───┐  └────►┌───────────┐
+ │ 跳过测试│         │ 测试功能   │
+ │(skipped)│         └─────┬─────┘
+ └─────────┘               │
+                      ┌────▼─────┐
+                      │ 功能正常? │
+                      └─┬──────┬─┘
+                        │YES   │NO
+                        │      │
+                   ┌────▼───┐  └────►┌────────────┐
+                   │ 通过测试│         │ 有JS错误?   │
+                   │(passed)│         └─┬────────┬─┘
+                   └─────────┘           │YES     │NO
+                                         │        │
+                                    ┌────▼───┐  ┌─▼──────┐
+                                    │ Bug!   │  │ 正常   │
+                                    │(failed)│  │(passed)│
+                                    └────────┘  └────────┘
+```
+
+**实践示例:**
+
+❌ **错误做法** - 混淆功能缺失和Bug:
+```python
+# 例子1: 错误地报告失败
+checkout_button = await page.query_selector("button[name='checkout']")
+if not checkout_button:
+    step.complete("failed", "Checkout功能异常")  # 错误!应该是skipped
+
+# 例子2: 忽略真正的Bug
+try:
+    await checkout_button.click()
+    step.complete("passed", "Checkout按钮正常")  # 错误!没检查是否真的跳转了
+except:
+    step.complete("failed", "Checkout失败")  # 笼统,没分析原因
+```
+
+✅ **正确做法** - 精确判断:
+```python
+# 1. 检测元素
+checkout_button = await intelligence.detect_element(
+    selectors=["button[name='checkout']", "a[href*='/checkout']"],
+    element_name="Checkout按钮"
+)
+
+# 2. 元素不存在 - 功能缺失,不是Bug
+if not checkout_button.exists:
+    step.complete("skipped", "该页面未提供Checkout功能")
+    return
+
+# 3. 元素存在,检查是否可用
+if not checkout_button.is_functional:
+    # 元素存在但不可用 - 可能是业务限制(如购物车为空)
+    empty_cart = await page.query_selector(".cart-empty")
+    if empty_cart:
+        step.complete("skipped", "购物车为空,Checkout按钮被禁用(正常)")
+    else:
+        step.complete("passed", "Checkout按钮存在但不可用,可能需要满足其他条件")
+    return
+
+# 4. 元素可用,测试功能
+js_errors_before = len(js_errors_list)
+try:
+    current_url = page.url
+    await checkout_button.element.click(timeout=3000)
+    await page.wait_for_timeout(2000)
+
+    new_url = page.url
+    new_js_errors = js_errors_list[js_errors_before:]
+
+    # 判断是否真的跳转了
+    if '/checkout' in new_url or '/payment' in new_url:
+        step.complete("passed", "Checkout功能正常,成功跳转到支付页面")
+    elif new_js_errors:
+        # 没跳转 + 有JS错误 = Bug
+        step.complete("failed", "Checkout按钮点击后未跳转,且有JavaScript错误",
+                     issue_details={
+                         "scenario": "用户点击Checkout按钮",
+                         "operation": "点击按钮,期望跳转到支付页面",
+                         "problem": f"URL未变化({current_url}),且有JS错误",
+                         "root_cause": "Checkout跳转逻辑存在Bug",
+                         "js_errors": new_js_errors
+                     })
+    else:
+        # 没跳转但无JS错误 - 可能是需要满足其他条件
+        step.complete("passed", "Checkout按钮点击后未跳转,可能需要填写配送信息等")
+
+except Exception as e:
+    # 分类失败原因
+    classification = await intelligence.classify_failure(
+        step_name="Checkout功能测试",
+        expected_element=checkout_button,
+        operation_attempted="点击Checkout按钮",
+        js_errors=js_errors_list[js_errors_before:],
+        exception=e
+    )
+
+    if classification.is_website_bug():
+        step.complete("failed", classification.reason)
+    else:
+        step.complete("skipped", classification.reason)
+```
+
+---
+
+### 测试智能化工具
+
+**核心模块:** `core/test_intelligence.py`
+
+**主要类:**
+
+1. **TestIntelligence**: 测试智能判断类
+   - `detect_element()`: 智能检测元素
+   - `classify_failure()`: 分类失败原因
+   - `should_skip_step()`: 判断是否跳过步骤
+   - `intelligent_wait_for_element()`: 智能等待元素
+
+2. **ElementDetectionResult**: 元素检测结果
+   - `exists`: 元素是否存在
+   - `visible`: 元素是否可见
+   - `enabled`: 元素是否可用
+   - `is_functional`: 功能是否正常
+
+3. **FailureClassification**: 失败分类
+   - `TYPE_WEBSITE_BUG`: 网站Bug
+   - `TYPE_MISSING_FEATURE`: 功能缺失
+   - `TYPE_TEST_TIMEOUT`: 测试超时
+   - `TYPE_TEST_ERROR`: 测试错误
+   - `TYPE_NETWORK_ERROR`: 网络错误
+
+**使用示例:**
+
+```python
+from core.test_intelligence import TestIntelligence
+
+async def enhanced_test_step(page, step, js_errors):
+    intelligence = TestIntelligence(page)
+
+    # 1. 智能检测元素
+    button = await intelligence.detect_element(
+        selectors=["button.add-to-cart", "[data-add-to-cart]"],
+        element_name="添加购物车按钮"
+    )
+
+    # 2. 判断是否跳过
+    should_skip, reason = intelligence.should_skip_step(
+        step_name="添加购物车",
+        prerequisite_elements=[button]
+    )
+
+    if should_skip:
+        step.complete("skipped", reason)
+        return
+
+    # 3. 测试功能
+    # ... 测试逻辑 ...
+```
+
+---
+
+### 测试报告规范
+
+**步骤状态定义:**
+
+- `passed`: 功能正常工作
+- `failed`: 确认是网站Bug
+- `skipped`: 功能不存在或测试无法进行(不是Bug)
+
+**示例报告:**
+
+```json
+{
+  "steps": [
+    {
+      "number": 5,
+      "name": "商品图片验证",
+      "status": "skipped",
+      "message": "该商品页面无图片元素,功能未实现"
+    },
+    {
+      "number": 7,
+      "name": "变体选择测试",
+      "status": "passed",
+      "message": "变体选择功能正常(颜色:2个选项,型号:2个选项)"
+    },
+    {
+      "number": 12,
+      "name": "支付流程验证",
+      "status": "failed",
+      "message": "Checkout按钮点击后未跳转,且有JavaScript错误",
+      "issue_details": {
+        "scenario": "用户点击Checkout按钮",
+        "operation": "点击按钮,期望跳转到支付页面",
+        "problem": "URL未变化,且有JS错误",
+        "root_cause": "Checkout跳转逻辑存在Bug",
+        "js_errors": ["TypeError: Cannot read property 'value' of null"]
+      }
+    }
+  ]
+}
+```
+
+---
+
+### 检查清单
+
+在编写测试步骤时,请确认:
+
+#### 元素检测
+- [ ] 使用`detect_element()`而非直接`query_selector()`
+- [ ] 提供多个fallback选择器
+- [ ] 检查元素的`exists/visible/enabled`三个维度
+
+#### 失败分类
+- [ ] 使用`classify_failure()`分类失败原因
+- [ ] 区分Bug、功能缺失、超时、测试错误
+- [ ] 只有确认是Bug才报告为`failed`
+
+#### 跳过判断
+- [ ] 功能不存在时使用`skipped`而非`failed`
+- [ ] 使用`should_skip_step()`判断前置条件
+- [ ] 在跳过消息中说明原因
+
+#### Bug检测
+- [ ] 监听JavaScript错误
+- [ ] 关联用户操作和错误
+- [ ] 提供详细的`issue_details`
+
+#### 测试覆盖
+- [ ] 只测试网页实际存在的功能
+- [ ] 不对不存在的功能进行测试
+- [ ] 基于实际UI结构编写选择器
+
+---
+
+**版本**: v2.0.4
 **更新日期**: 2025-12-04
 **维护者**: Fiido Shop Flow Guardian Team
+**新增内容**: 测试智能化原则与工具

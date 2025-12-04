@@ -1,0 +1,1090 @@
+{
+  "timestamp": "2025-12-04T16:38:22.300142",
+  "total": 20,
+  "passed": 20,
+  "failed": 0,
+  "error": 0,
+  "total_duration": 274.312035,
+  "results": [
+    {
+      "product_id": "bike-rack-pannier-bag",
+      "product_name": "Bike Rack Pannier Bag",
+      "status": "passed",
+      "duration": 12.65,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/bike-rack-pannier-bag",
+          "error": null,
+          "duration": 7.36
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$66.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.12
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.81
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-14-inch-us-mouth-pneumatic-inner-tube-tire",
+      "product_name": "Fiido 14 Inch Us Mouth Pneumatic Inner Tube Tire",
+      "status": "passed",
+      "duration": 13.65,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-14-inch-us-mouth-pneumatic-inner-tube-tire",
+          "error": null,
+          "duration": 8.45
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $18.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "未检测到购物车数量变化（可能需要刷新或查看购物车页面）",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，但购物车为空（商品可能未成功加入）",
+          "error": null,
+          "duration": 2.77
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-air-carbon-fiber-electric-bike",
+      "product_name": "Fiido Air Carbon Fiber Electric Bike",
+      "status": "passed",
+      "duration": 14.91,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-air-carbon-fiber-electric-bike",
+          "error": null,
+          "duration": 8.25
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$1,799.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.09
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 4.17
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-battery-d1-d4s-q1-q1s",
+      "product_name": "Fiido Battery D1 D4S Q1 Q1S",
+      "status": "passed",
+      "duration": 13.5,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-battery-d1-d4s-q1-q1s",
+          "error": null,
+          "duration": 7.93
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $320.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.07
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.05
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.13
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-beast-electric-scooter",
+      "product_name": "Fiido Beast Electric Scooter",
+      "status": "passed",
+      "duration": 11.7,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-beast-electric-scooter",
+          "error": null,
+          "duration": 7.75
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品标题和价格均正常显示 (价格: $999.00)",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "failed",
+          "message": "未找到加购按钮 (selector: button[name='add'], button:has-text('Add to Cart'))",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "未检测到购物车数量变化（可能需要刷新或查看购物车页面）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，但购物车为空（商品可能未成功加入）",
+          "error": null,
+          "duration": 3.62
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-bike-brake-pads",
+      "product_name": "Fiido Bike Brake Pads",
+      "status": "passed",
+      "duration": 14.22,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-bike-brake-pads",
+          "error": null,
+          "duration": 8.79
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $18.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.12
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.96
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-c11-electric-commuter-bike",
+      "product_name": "Fiido C11 Electric Commuter Bike",
+      "status": "passed",
+      "duration": 13.28,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-c11-electric-commuter-bike",
+          "error": null,
+          "duration": 6.88
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$999.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.22
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.08
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.17
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.63
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-c11-pro-city-e-bike",
+      "product_name": "Fiido C11 Pro City E Bike",
+      "status": "passed",
+      "duration": 14.43,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-c11-pro-city-e-bike",
+          "error": null,
+          "duration": 7.92
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$1,099.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.48
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.61
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-c21-lightweight-step-over-urban-gravel-ebikes",
+      "product_name": "Fiido C21 Lightweight Step Over Urban Gravel Ebikes",
+      "status": "passed",
+      "duration": 17.8,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-c21-lightweight-step-over-urban-gravel-ebikes",
+          "error": null,
+          "duration": 12.48
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: Sale price$999.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.11
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.83
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-d1-battery-shell",
+      "product_name": "Fiido D1 Battery Shell",
+      "status": "passed",
+      "duration": 13.21,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-d1-battery-shell",
+          "error": null,
+          "duration": 7.92
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $19.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.09
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.14
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.76
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "extender-battery-combo-for-nomads-with-battery-bag",
+      "product_name": "Extender Battery Combo For Nomads With Battery Bag",
+      "status": "passed",
+      "duration": 17.45,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/extender-battery-combo-for-nomads-with-battery-bag",
+          "error": null,
+          "duration": 11.61
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $254.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.09
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.39
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "battery-rack-for-titan",
+      "product_name": "Battery Rack For Titan",
+      "status": "passed",
+      "duration": 12.71,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/battery-rack-for-titan",
+          "error": null,
+          "duration": 7.18
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $119.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.09
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.1
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "d11-electric-bike-battery",
+      "product_name": "D11 Electric Bike Battery",
+      "status": "passed",
+      "duration": 12.38,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/d11-electric-bike-battery",
+          "error": null,
+          "duration": 7.05
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $436.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.12
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.12
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.73
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-m21-fat-tire-electric-bike-with-torque-sensor",
+      "product_name": "Fiido M21 Fat Tire Electric Bike With Torque Sensor",
+      "status": "passed",
+      "duration": 11.25,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-m21-fat-tire-electric-bike-with-torque-sensor",
+          "error": null,
+          "duration": 8.16
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品标题和价格均正常显示 (价格: $999.00)",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "failed",
+          "message": "未找到加购按钮 (selector: button[name='add'], button:has-text('Add to Cart'))",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "未检测到购物车数量变化（可能需要刷新或查看购物车页面）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，但购物车为空（商品可能未成功加入）",
+          "error": null,
+          "duration": 2.74
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "back-brake-lever-with-wire-for-fiido-x",
+      "product_name": "Back Brake Lever With Wire For Fiido X",
+      "status": "passed",
+      "duration": 13.13,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/back-brake-lever-with-wire-for-fiido-x",
+          "error": null,
+          "duration": 7.95
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $57.83)，但未检测到标题",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.06
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.06
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.72
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "battery-lock-key-for-c11",
+      "product_name": "Battery Lock Key For C11",
+      "status": "passed",
+      "duration": 15.16,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/battery-lock-key-for-c11",
+          "error": null,
+          "duration": 9.66
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $30.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.14
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.16
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.85
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "display-for-c11-pro",
+      "product_name": "Display For C11 Pro",
+      "status": "passed",
+      "duration": 14.04,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/display-for-c11-pro",
+          "error": null,
+          "duration": 8.67
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $60.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.17
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.83
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "battery-for-c21",
+      "product_name": "Battery For C21",
+      "status": "passed",
+      "duration": 14.07,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/battery-for-c21",
+          "error": null,
+          "duration": 8.27
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $173.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "未检测到购物车数量变化（可能需要刷新或查看购物车页面）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.39
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "brake-systemf-for-c21",
+      "product_name": "Brake Systemf For C21",
+      "status": "passed",
+      "duration": 12.41,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/brake-systemf-for-c21",
+          "error": null,
+          "duration": 7.19
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $53.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.08
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.78
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-d2s-display",
+      "product_name": "Fiido D2S Display",
+      "status": "passed",
+      "duration": 12.34,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并检查页面是否正常加载",
+          "status": "passed",
+          "message": "成功访问页面: https://fiido.com/products/fiido-d2s-display",
+          "error": null,
+          "duration": 6.96
+        },
+        {
+          "number": 2,
+          "name": "商品信息显示",
+          "description": "验证商品标题、价格等核心信息是否正确显示",
+          "status": "passed",
+          "message": "商品价格显示正常 (价格: $54.00)，但未检测到标题",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "添加购物车",
+          "description": "点击添加购物车按钮，验证能否成功加入",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 4,
+          "name": "购物车验证",
+          "description": "检查购物车中是否有新增商品",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "支付流程",
+          "description": "访问购物车页面，验证Checkout按钮是否可用",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.97
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

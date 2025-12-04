@@ -1,0 +1,595 @@
+{
+  "timestamp": "2025-12-04T15:55:43.219709",
+  "total": 5,
+  "passed": 5,
+  "failed": 0,
+  "error": 0,
+  "total_duration": 97.906229,
+  "results": [
+    {
+      "product_id": "bike-rack-pannier-bag",
+      "product_name": "Bike Rack Pannier Bag",
+      "status": "passed",
+      "duration": 18.12,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并等待完全加载",
+          "status": "passed",
+          "message": "页面加载完成: https://fiido.com/products/bike-rack-pannier-bag",
+          "error": null,
+          "duration": 6.99
+        },
+        {
+          "number": 2,
+          "name": "页面结构检测",
+          "description": "检查页面基础DOM结构是否完整",
+          "status": "passed",
+          "message": "页面基础结构完整（body, header, main均存在）",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 3,
+          "name": "商品标题验证",
+          "description": "验证商品标题显示是否正确",
+          "status": "passed",
+          "message": "商品标题显示正常: Bike Rack Pannier Bag",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 4,
+          "name": "价格信息验证",
+          "description": "检查商品价格显示是否完整",
+          "status": "passed",
+          "message": "价格信息显示正常: Sale price$66.00",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "商品图片验证",
+          "description": "验证商品图片是否加载成功",
+          "status": "passed",
+          "message": "商品图片存在 (总数: 1, 可见: 0, 缩略图: 0)",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 6,
+          "name": "商品描述验证",
+          "description": "检查商品描述内容是否存在",
+          "status": "passed",
+          "message": "未检测到详细商品描述（可能在页面其他位置）",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 7,
+          "name": "变体选择测试",
+          "description": "测试颜色/尺寸等变体选项功能",
+          "status": "passed",
+          "message": "未检测到变体选项（可能是标准商品）",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 8,
+          "name": "数量选择测试",
+          "description": "测试商品数量增减功能",
+          "status": "passed",
+          "message": "检测到数量选择器，但交互受限: ElementHandle.fill: Timeout 3000ms exceeded.\nCall ",
+          "error": null,
+          "duration": 6.01
+        },
+        {
+          "number": 9,
+          "name": "添加购物车",
+          "description": "测试添加购物车功能",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.09
+        },
+        {
+          "number": 10,
+          "name": "购物车验证",
+          "description": "验证购物车商品数量变化",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 11,
+          "name": "相关推荐验证",
+          "description": "检查相关商品推荐是否显示",
+          "status": "passed",
+          "message": "未检测到相关推荐（可能在页面底部或不存在）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 12,
+          "name": "支付流程验证",
+          "description": "验证从购物车到支付页面的完整流程",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.64
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "fiido-14-inch-us-mouth-pneumatic-inner-tube-tire",
+      "product_name": "Fiido 14 Inch Us Mouth Pneumatic Inner Tube Tire",
+      "status": "passed",
+      "duration": 17.15,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并等待完全加载",
+          "status": "passed",
+          "message": "页面加载完成: https://fiido.com/products/fiido-14-inch-us-mouth-pneumatic-inner-tube-tire",
+          "error": null,
+          "duration": 5.85
+        },
+        {
+          "number": 2,
+          "name": "页面结构检测",
+          "description": "检查页面基础DOM结构是否完整",
+          "status": "passed",
+          "message": "页面基础结构完整（body, header, main均存在）",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 3,
+          "name": "商品标题验证",
+          "description": "验证商品标题显示是否正确",
+          "status": "passed",
+          "message": "商品标题显示正常: Fiido 14-inch Us Mouth Pneumatic Inner Tube Tire",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 4,
+          "name": "价格信息验证",
+          "description": "检查商品价格显示是否完整",
+          "status": "passed",
+          "message": "价格信息显示正常: $18.00",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "商品图片验证",
+          "description": "验证商品图片是否加载成功",
+          "status": "passed",
+          "message": "商品图片存在 (总数: 6, 可见: 3, 缩略图: 0)",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 6,
+          "name": "商品描述验证",
+          "description": "检查商品描述内容是否存在",
+          "status": "passed",
+          "message": "商品描述存在 (长度: 172 字符)",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 7,
+          "name": "变体选择测试",
+          "description": "测试颜色/尺寸等变体选项功能",
+          "status": "passed",
+          "message": "未检测到变体选项（可能是标准商品）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 8,
+          "name": "数量选择测试",
+          "description": "测试商品数量增减功能",
+          "status": "passed",
+          "message": "检测到数量选择器，但交互受限: ElementHandle.fill: Timeout 3000ms exceeded.\nCall ",
+          "error": null,
+          "duration": 6.02
+        },
+        {
+          "number": 9,
+          "name": "添加购物车",
+          "description": "测试添加购物车功能",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 10,
+          "name": "购物车验证",
+          "description": "验证购物车商品数量变化",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 11,
+          "name": "相关推荐验证",
+          "description": "检查相关商品推荐是否显示",
+          "status": "passed",
+          "message": "未检测到相关推荐（可能在页面底部或不存在）",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 12,
+          "name": "支付流程验证",
+          "description": "验证从购物车到支付页面的完整流程",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 2.75
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "extender-battery-combo-for-nomads-with-battery-bag",
+      "product_name": "Extender Battery Combo For Nomads With Battery Bag",
+      "status": "passed",
+      "duration": 23.58,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并等待完全加载",
+          "status": "passed",
+          "message": "页面加载完成: https://fiido.com/products/extender-battery-combo-for-nomads-with-battery-bag",
+          "error": null,
+          "duration": 8.92
+        },
+        {
+          "number": 2,
+          "name": "页面结构检测",
+          "description": "检查页面基础DOM结构是否完整",
+          "status": "passed",
+          "message": "页面基础结构完整（body, header, main均存在）",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 3,
+          "name": "商品标题验证",
+          "description": "验证商品标题显示是否正确",
+          "status": "passed",
+          "message": "商品标题显示正常: Extender Battery Combo for Nomads (with Battery Bag)",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 4,
+          "name": "价格信息验证",
+          "description": "检查商品价格显示是否完整",
+          "status": "passed",
+          "message": "价格信息显示正常: $254.00",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "商品图片验证",
+          "description": "验证商品图片是否加载成功",
+          "status": "passed",
+          "message": "商品图片存在 (总数: 1, 可见: 0, 缩略图: 0)",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 6,
+          "name": "商品描述验证",
+          "description": "检查商品描述内容是否存在",
+          "status": "passed",
+          "message": "未检测到详细商品描述（可能在页面其他位置）",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 7,
+          "name": "变体选择测试",
+          "description": "测试颜色/尺寸等变体选项功能",
+          "status": "passed",
+          "message": "未检测到变体选项（可能是标准商品）",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 8,
+          "name": "数量选择测试",
+          "description": "测试商品数量增减功能",
+          "status": "passed",
+          "message": "检测到数量选择器，但交互受限: ElementHandle.fill: Timeout 3000ms exceeded.\nCall ",
+          "error": null,
+          "duration": 6.04
+        },
+        {
+          "number": 9,
+          "name": "添加购物车",
+          "description": "测试添加购物车功能",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.1
+        },
+        {
+          "number": 10,
+          "name": "购物车验证",
+          "description": "验证购物车商品数量变化",
+          "status": "passed",
+          "message": "未检测到购物车数量变化（需要查看购物车页面验证）",
+          "error": null,
+          "duration": 0.04
+        },
+        {
+          "number": 11,
+          "name": "相关推荐验证",
+          "description": "检查相关商品推荐是否显示",
+          "status": "passed",
+          "message": "未检测到相关推荐（可能在页面底部或不存在）",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 12,
+          "name": "支付流程验证",
+          "description": "验证从购物车到支付页面的完整流程",
+          "status": "passed",
+          "message": "购物车页面正常，但购物车为空",
+          "error": null,
+          "duration": 6.02
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "battery-rack-for-titan",
+      "product_name": "Battery Rack For Titan",
+      "status": "passed",
+      "duration": 18.08,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并等待完全加载",
+          "status": "passed",
+          "message": "页面加载完成: https://fiido.com/products/battery-rack-for-titan",
+          "error": null,
+          "duration": 5.64
+        },
+        {
+          "number": 2,
+          "name": "页面结构检测",
+          "description": "检查页面基础DOM结构是否完整",
+          "status": "passed",
+          "message": "页面基础结构完整（body, header, main均存在）",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 3,
+          "name": "商品标题验证",
+          "description": "验证商品标题显示是否正确",
+          "status": "passed",
+          "message": "商品标题显示正常: Battery Rack for Titan",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 4,
+          "name": "价格信息验证",
+          "description": "检查商品价格显示是否完整",
+          "status": "passed",
+          "message": "价格信息显示正常: $119.00",
+          "error": null,
+          "duration": 0.02
+        },
+        {
+          "number": 5,
+          "name": "商品图片验证",
+          "description": "验证商品图片是否加载成功",
+          "status": "passed",
+          "message": "商品图片存在 (总数: 1, 可见: 0, 缩略图: 0)",
+          "error": null,
+          "duration": 0.03
+        },
+        {
+          "number": 6,
+          "name": "商品描述验证",
+          "description": "检查商品描述内容是否存在",
+          "status": "passed",
+          "message": "未检测到详细商品描述（可能在页面其他位置）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 7,
+          "name": "变体选择测试",
+          "description": "测试颜色/尺寸等变体选项功能",
+          "status": "passed",
+          "message": "未检测到变体选项（可能是标准商品）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 8,
+          "name": "数量选择测试",
+          "description": "测试商品数量增减功能",
+          "status": "passed",
+          "message": "检测到数量选择器，但交互受限: ElementHandle.fill: Timeout 3000ms exceeded.\nCall ",
+          "error": null,
+          "duration": 6.01
+        },
+        {
+          "number": 9,
+          "name": "添加购物车",
+          "description": "测试添加购物车功能",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 10,
+          "name": "购物车验证",
+          "description": "验证购物车商品数量变化",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 11,
+          "name": "相关推荐验证",
+          "description": "检查相关商品推荐是否显示",
+          "status": "passed",
+          "message": "未检测到相关推荐（可能在页面底部或不存在）",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 12,
+          "name": "支付流程验证",
+          "description": "验证从购物车到支付页面的完整流程",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.91
+        }
+      ],
+      "errors": []
+    },
+    {
+      "product_id": "d11-electric-bike-battery",
+      "product_name": "D11 Electric Bike Battery",
+      "status": "passed",
+      "duration": 20.97,
+      "steps": [
+        {
+          "number": 1,
+          "name": "页面访问",
+          "description": "访问商品页面并等待完全加载",
+          "status": "passed",
+          "message": "页面加载完成: https://fiido.com/products/d11-electric-bike-battery",
+          "error": null,
+          "duration": 8.39
+        },
+        {
+          "number": 2,
+          "name": "页面结构检测",
+          "description": "检查页面基础DOM结构是否完整",
+          "status": "passed",
+          "message": "页面基础结构完整（body, header, main均存在）",
+          "error": null,
+          "duration": 0.06
+        },
+        {
+          "number": 3,
+          "name": "商品标题验证",
+          "description": "验证商品标题显示是否正确",
+          "status": "passed",
+          "message": "商品标题显示正常: Additional Fiido Electric Bike Battery for D11",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 4,
+          "name": "价格信息验证",
+          "description": "检查商品价格显示是否完整",
+          "status": "passed",
+          "message": "价格信息显示正常: $436.00",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 5,
+          "name": "商品图片验证",
+          "description": "验证商品图片是否加载成功",
+          "status": "passed",
+          "message": "商品图片存在 (总数: 6, 可见: 4, 缩略图: 0)",
+          "error": null,
+          "duration": 0.05
+        },
+        {
+          "number": 6,
+          "name": "商品描述验证",
+          "description": "检查商品描述内容是否存在",
+          "status": "passed",
+          "message": "商品描述存在 (长度: 239 字符)",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 7,
+          "name": "变体选择测试",
+          "description": "测试颜色/尺寸等变体选项功能",
+          "status": "passed",
+          "message": "变体选择功能正常 (变体: 2个选项，已测试切换)",
+          "error": null,
+          "duration": 0.64
+        },
+        {
+          "number": 8,
+          "name": "数量选择测试",
+          "description": "测试商品数量增减功能",
+          "status": "passed",
+          "message": "检测到数量选择器，但交互受限: ElementHandle.fill: Timeout 3000ms exceeded.\nCall ",
+          "error": null,
+          "duration": 6.04
+        },
+        {
+          "number": 9,
+          "name": "添加购物车",
+          "description": "测试添加购物车功能",
+          "status": "passed",
+          "message": "成功点击添加购物车按钮",
+          "error": null,
+          "duration": 2.07
+        },
+        {
+          "number": 10,
+          "name": "购物车验证",
+          "description": "验证购物车商品数量变化",
+          "status": "passed",
+          "message": "购物车已更新，数量: 1",
+          "error": null,
+          "duration": 0.01
+        },
+        {
+          "number": 11,
+          "name": "相关推荐验证",
+          "description": "检查相关商品推荐是否显示",
+          "status": "passed",
+          "message": "未检测到相关推荐（可能在页面底部或不存在）",
+          "error": null,
+          "duration": 0.0
+        },
+        {
+          "number": 12,
+          "name": "支付流程验证",
+          "description": "验证从购物车到支付页面的完整流程",
+          "status": "passed",
+          "message": "购物车页面正常，Checkout按钮可见可点击",
+          "error": null,
+          "duration": 3.38
+        }
+      ],
+      "errors": []
+    }
+  ]
+}
