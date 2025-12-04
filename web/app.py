@@ -155,7 +155,72 @@ def parse_progress_line(line, task_id):
     """
     import re
 
-    # 解析 "[1/10] Processing collection: xxx"
+    # 解析测试步骤: [步骤 1] 页面访问
+    match = re.search(r'\[步骤\s+(\d+)\]\s+(.+)', line)
+    if match:
+        step_number = int(match.group(1))
+        step_name = match.group(2).strip()
+
+        # 记录测试步骤
+        if 'test_steps' not in running_tasks[task_id]:
+            running_tasks[task_id]['test_steps'] = []
+
+        # 检查是否已存在该步骤
+        existing_step = None
+        for step in running_tasks[task_id]['test_steps']:
+            if step['number'] == step_number:
+                existing_step = step
+                break
+
+        if not existing_step:
+            running_tasks[task_id]['test_steps'].append({
+                'number': step_number,
+                'name': step_name,
+                'status': 'running'
+            })
+        return
+
+    # 解析步骤说明
+    match = re.search(r'说明:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        description = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            steps[-1]['description'] = description
+        return
+
+    # 解析步骤结果: ✓ 结果: xxx
+    match = re.search(r'[✓✗⊘]\s*结果:\s*(.+?)(?:\s*\(耗时:\s*([\d.]+)s\))?$', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        result = match.group(1).strip()
+        duration = match.group(2)
+
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            step = steps[-1]
+            step['result'] = result
+            if duration:
+                step['duration'] = float(duration)
+
+            # 根据符号判断状态
+            if '✓' in line:
+                step['status'] = 'passed'
+            elif '✗' in line:
+                step['status'] = 'failed'
+            elif '⊘' in line:
+                step['status'] = 'skipped'
+        return
+
+    # 解析错误信息
+    match = re.search(r'错误:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        error = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            steps[-1]['error'] = error
+        return
+
+    # 解析 "[1/10] Processing collection: xxx" (商品发现)
     match = re.search(r'\[(\d+)/(\d+)\]\s+Processing collection:\s+(.+)', line)
     if match:
         current = int(match.group(1))
@@ -306,24 +371,35 @@ def run_tests():
     data = request.json or {}
 
     # 构建测试命令
-    command = ['./run_tests.sh']
-
-    # 添加过滤参数
-    if data.get('priority'):
-        command.append(f"--priority={data['priority']}")
-
-    if data.get('category'):
-        command.append(f"--category={data['category']}")
-
+    # 如果是单个商品测试，使用专用脚本
     if data.get('product_id'):
-        command.append(f"--product-id={data['product_id']}")
+        test_mode = data.get('test_mode', 'quick')  # quick 或 full
+        command = [
+            './run.sh',
+            'python3',
+            'scripts/run_product_test.py',
+            '--product-id', data['product_id'],
+            '--mode', test_mode
+        ]
+    else:
+        # 使用原有的pytest测试
+        command = ['./run_tests.sh']
+
+        # 添加过滤参数
+        if data.get('priority'):
+            command.append(f"--priority={data['priority']}")
+
+        if data.get('category'):
+            command.append(f"--category={data['category']}")
 
     task_id = f"test_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
     running_tasks[task_id] = {
         'status': 'running',
         'started_at': datetime.now().isoformat(),
-        'params': data
+        'params': data,
+        'test_steps': [],  # 存储测试步骤
+        'test_mode': data.get('test_mode', 'quick')  # 记录测试模式
     }
 
     # 后台执行

@@ -54,6 +54,15 @@
                                 <option value="">选择商品...</option>
                             </select>
                         </div>
+
+                        <div class="col-md-6" id="test-mode-select" style="display: none;">
+                            <label class="form-label">测试模式</label>
+                            <select class="form-select" id="test-mode">
+                                <option value="quick">⚡ 快速测试 - 核心购物流程（5步）</option>
+                                <option value="full">🔍 全面测试 - 全链路场景覆盖（12步）</option>
+                            </select>
+                            <small class="text-muted">快速测试验证核心功能，全面测试覆盖所有场景</small>
+                        </div>
                     </div>
 
                     <div class="mt-4">
@@ -101,18 +110,37 @@
         </div>
     </div>
     <div class="card-body">
+        <!-- 总体进度 -->
         <div class="mb-3">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span id="test-status-message">正在初始化测试环境...</span>
-                <span class="spinner-border spinner-border-sm text-primary"></span>
+                <span class="spinner-border spinner-border-sm text-primary" id="test-spinner"></span>
             </div>
-            <div class="progress">
+            <div class="progress" style="height: 25px;">
                 <div class="progress-bar progress-bar-striped progress-bar-animated"
-                     role="progressbar" style="width: 100%"></div>
+                     id="test-progress-bar"
+                     role="progressbar" style="width: 0%">
+                    <span id="test-progress-text">0%</span>
+                </div>
             </div>
         </div>
-        <div id="test-output-log" class="log-output" style="display: none;">
-            <!-- 实时日志输出 -->
+
+        <!-- 详细测试步骤 -->
+        <div id="test-steps-container" style="display: none;">
+            <h6 class="mb-3">测试步骤详情</h6>
+            <div id="test-steps-list">
+                <!-- 步骤列表将动态填充 -->
+            </div>
+        </div>
+
+        <!-- 日志输出（可选展开） -->
+        <div class="mt-3">
+            <button class="btn btn-sm btn-outline-secondary" onclick="toggleTestLogs()" id="toggle-logs-btn">
+                <i class="bi bi-chevron-down"></i> 显示详细日志
+            </button>
+            <div id="test-output-log" class="log-output mt-2" style="display: none; max-height: 300px;">
+                <!-- 实时日志输出 -->
+            </div>
         </div>
     </div>
 </div>
@@ -196,6 +224,7 @@ function updateTestScope() {
     document.getElementById('priority-select').style.display = 'none';
     document.getElementById('category-select').style.display = 'none';
     document.getElementById('product-select').style.display = 'none';
+    document.getElementById('test-mode-select').style.display = 'none';
 
     if (scope === 'priority') {
         document.getElementById('priority-select').style.display = 'block';
@@ -203,6 +232,7 @@ function updateTestScope() {
         document.getElementById('category-select').style.display = 'block';
     } else if (scope === 'product') {
         document.getElementById('product-select').style.display = 'block';
+        document.getElementById('test-mode-select').style.display = 'block';  // 显示测试模式选择
     }
 }
 
@@ -233,6 +263,7 @@ async function runTests() {
             return;
         }
         params.product_id = productId;
+        params.test_mode = document.getElementById('test-mode').value;  // 添加测试模式
     }
 
     startTestExecution(params);
@@ -295,13 +326,157 @@ function hideTestExecutionCard() {
 // 更新测试状态
 function updateTestStatus(status) {
     const message = document.getElementById('test-status-message');
+    const progressBar = document.getElementById('test-progress-bar');
+    const progressText = document.getElementById('test-progress-text');
 
+    // 更新进度条
+    if (status.progress) {
+        const { current, total, message: msg } = status.progress;
+        if (total > 0) {
+            const percentage = Math.round((current / total) * 100);
+            progressBar.style.width = percentage + '%';
+            progressText.textContent = percentage + '%';
+        }
+        if (msg) {
+            message.textContent = msg;
+        }
+    }
+
+    // 更新测试步骤显示
+    if (status.test_steps && status.test_steps.length > 0) {
+        updateTestSteps(status.test_steps);
+    }
+
+    // 更新日志
+    if (status.logs && status.logs.length > 0) {
+        updateTestLogs(status.logs);
+    }
+
+    // 更新状态
     if (status.status === 'running') {
-        message.textContent = '测试正在执行中...';
+        message.textContent = message.textContent || '测试正在执行中...';
     } else if (status.status === 'completed') {
-        message.textContent = '测试执行完成';
+        message.textContent = '✓ 测试执行完成';
+        progressBar.style.width = '100%';
+        progressText.textContent = '100%';
+        progressBar.classList.remove('progress-bar-animated');
+        progressBar.classList.add('bg-success');
+        document.getElementById('test-spinner').style.display = 'none';
     } else if (status.status === 'failed') {
-        message.textContent = '测试执行失败';
+        message.textContent = '✗ 测试执行失败';
+        progressBar.classList.remove('progress-bar-animated');
+        progressBar.classList.add('bg-danger');
+        document.getElementById('test-spinner').style.display = 'none';
+    }
+}
+
+// 更新测试步骤显示
+function updateTestSteps(steps) {
+    const container = document.getElementById('test-steps-container');
+    const stepsList = document.getElementById('test-steps-list');
+
+    // 显示步骤容器
+    container.style.display = 'block';
+
+    // 生成步骤HTML
+    const html = steps.map(step => {
+        let statusIcon = '';
+        let statusClass = '';
+        let statusBadge = '';
+
+        if (step.status === 'passed') {
+            statusIcon = '✓';
+            statusClass = 'border-success test-step-card';
+            statusBadge = '<span class="badge bg-success">通过</span>';
+        } else if (step.status === 'failed') {
+            statusIcon = '✗';
+            statusClass = 'border-danger test-step-card';
+            statusBadge = '<span class="badge bg-danger">失败</span>';
+        } else if (step.status === 'skipped') {
+            statusIcon = '⊘';
+            statusClass = 'border-warning test-step-card';
+            statusBadge = '<span class="badge bg-warning">跳过</span>';
+        } else if (step.status === 'running') {
+            statusIcon = '⋯';
+            statusClass = 'border-primary test-step-card';
+            statusBadge = '<span class="badge bg-primary"><span class="spinner-border spinner-border-sm me-1"></span>进行中</span>';
+        } else {
+            statusIcon = '○';
+            statusClass = 'border-secondary test-step-card';
+            statusBadge = '<span class="badge bg-secondary">待执行</span>';
+        }
+
+        let durationHtml = '';
+        if (step.duration !== undefined) {
+            durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
+        }
+
+        return `
+            <div class="card ${statusClass}">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center">
+                                <span class="step-icon">${statusIcon}</span>
+                                <strong>步骤 ${step.number}: ${escapeHtml(step.name)}</strong>
+                                ${durationHtml}
+                            </div>
+                            ${step.description ? `<div class="step-description">📝 ${escapeHtml(step.description)}</div>` : ''}
+                            ${step.result ? `<div class="step-result">💡 ${escapeHtml(step.result)}</div>` : ''}
+                            ${step.error ? `<div class="step-error">⚠️ ${escapeHtml(step.error)}</div>` : ''}
+                        </div>
+                        <div>
+                            ${statusBadge}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    stepsList.innerHTML = html;
+}
+
+// 更新测试日志
+let lastLogCount = 0;
+function updateTestLogs(logs) {
+    const logsDiv = document.getElementById('test-output-log');
+
+    if (logs.length > lastLogCount) {
+        const newLogs = logs.slice(lastLogCount);
+        const logsHtml = newLogs.map(log => {
+            if (log.includes('ERROR') || log.includes('失败') || log.includes('✗')) {
+                return `<div class="log-error">${escapeHtml(log)}</div>`;
+            } else if (log.includes('SUCCESS') || log.includes('成功') || log.includes('✓')) {
+                return `<div class="log-success">${escapeHtml(log)}</div>`;
+            } else if (log.includes('WARNING') || log.includes('警告')) {
+                return `<div class="log-warning">${escapeHtml(log)}</div>`;
+            }
+            return `<div>${escapeHtml(log)}</div>`;
+        }).join('');
+
+        if (lastLogCount === 0) {
+            logsDiv.innerHTML = logsHtml;
+        } else {
+            logsDiv.insertAdjacentHTML('beforeend', logsHtml);
+        }
+
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+        lastLogCount = logs.length;
+    }
+}
+
+// 切换日志显示
+function toggleTestLogs() {
+    const logsDiv = document.getElementById('test-output-log');
+    const btn = document.getElementById('toggle-logs-btn');
+
+    if (logsDiv.style.display === 'none') {
+        logsDiv.style.display = 'block';
+        btn.innerHTML = '<i class="bi bi-chevron-up"></i> 隐藏详细日志';
+    } else {
+        logsDiv.style.display = 'none';
+        btn.innerHTML = '<i class="bi bi-chevron-down"></i> 显示详细日志';
     }
 }
 
@@ -406,6 +581,13 @@ async function loadTestHistory() {
 function refreshTestHistory() {
     utils.showLoading('test-history-container');
     loadTestHistory();
+}
+
+// 工具函数
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
 }
 </script>
 {% endblock %}
