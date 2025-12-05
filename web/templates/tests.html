@@ -577,7 +577,7 @@ let totalExpectedProducts = 0;   // 预期商品总数
 // 步骤间微进度动画相关变量
 let microProgressInterval = null;   // 微进度定时器
 let lastKnownProgress = 0;          // 上次已知的真实进度
-let microProgressIncrement = 0.9;   // 每次微增量（百分比）- 6倍速更快推进
+let microProgressIncrement = 1.8;   // 每次微增量（百分比）- 12倍速更快推进
 let microProgressMaxGap = 12;       // 最大提前推进量（不超过下一个里程碑）
 
 // 会话状态持久化 - 用于标签页切换恢复
@@ -1411,9 +1411,9 @@ function startInitializationProgress() {
 
         // 缓慢增加到initProgressTarget
         if (initProgress < initProgressTarget) {
-            // 越接近目标越慢（模拟加载效果）
+            // 越接近目标越慢（模拟加载效果）- 速度提升2.5倍
             const remaining = initProgressTarget - initProgress;
-            const increment = Math.max(0.1, remaining * 0.08);
+            const increment = Math.max(0.2, remaining * 0.2);
             initProgress = Math.min(initProgressTarget, initProgress + increment);
 
             // 调用setProgressWithAnimation，由于"只进不退"机制，进度只会往前走

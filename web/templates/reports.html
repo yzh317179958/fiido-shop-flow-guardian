@@ -201,6 +201,102 @@
     font-weight: 600;
 }
 
+/* AI分析内容Markdown渲染样式 */
+.ai-analysis-content {
+    line-height: 1.8;
+    font-size: 0.95rem;
+}
+.ai-analysis-content h1 {
+    font-size: 1.5rem;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 8px;
+    margin: 24px 0 16px 0;
+}
+.ai-analysis-content h2 {
+    font-size: 1.3rem;
+    color: #444;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 6px;
+    margin: 20px 0 12px 0;
+}
+.ai-analysis-content h3 {
+    font-size: 1.15rem;
+    color: #555;
+    margin: 16px 0 10px 0;
+}
+.ai-analysis-content h4, .ai-analysis-content h5 {
+    font-size: 1rem;
+    color: #666;
+    margin: 12px 0 8px 0;
+}
+.ai-analysis-content p {
+    margin-bottom: 12px;
+}
+.ai-analysis-content ul, .ai-analysis-content ol {
+    padding-left: 24px;
+    margin-bottom: 12px;
+}
+.ai-analysis-content li {
+    margin-bottom: 6px;
+}
+.ai-analysis-content code {
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+.ai-analysis-content pre {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+.ai-analysis-content pre code {
+    background: transparent;
+    padding: 0;
+    color: #333;
+}
+.ai-analysis-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+}
+.ai-analysis-content th, .ai-analysis-content td {
+    border: 1px solid #dee2e6;
+    padding: 10px 12px;
+    text-align: left;
+}
+.ai-analysis-content th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+}
+.ai-analysis-content tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.ai-analysis-content blockquote {
+    border-left: 4px solid #667eea;
+    padding-left: 16px;
+    margin: 16px 0;
+    color: #666;
+    font-style: italic;
+}
+.ai-analysis-content hr {
+    border: none;
+    border-top: 1px solid #e9ecef;
+    margin: 20px 0;
+}
+.ai-analysis-content strong {
+    color: #333;
+    font-weight: 600;
+}
+.ai-analysis-content em {
+    color: #666;
+}
+
 /* 趋势图容器 */
 .chart-container {
     position: relative;
@@ -700,6 +796,7 @@
 
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
 // 全局变量
 let allReports = [];
@@ -793,7 +890,7 @@ async function loadAIReportsList() {
             <div class="list-group-item list-group-item-action" onclick="loadAIAnalysisForReport('${aiReport.report_id}')" style="cursor: pointer;">
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
-                        <div class="fw-bold">${escapeHtml(getReportDisplayName({id: aiReport.report_id}) || aiReport.report_id)}</div>
+                        <div class="fw-bold">${escapeHtml(getReportTitleWithId({id: aiReport.report_id}) || aiReport.report_id)}</div>
                         <small class="text-muted">
                             <i class="bi bi-robot"></i> ${aiReport.provider || 'AI'}
                             · ${aiReport.created_at ? new Date(aiReport.created_at).toLocaleString('zh-CN') : ''}
@@ -957,8 +1054,8 @@ function renderReportCard(report) {
     const timestamp = report.timestamp ? new Date(report.timestamp).toLocaleString('zh-CN') : '未知时间';
     const testMode = report.test_mode === 'quick' ? '快速测试' : report.test_mode === 'full' ? '全面测试' : '测试';
 
-    // 生成友好的报告标题
-    const reportTitle = getReportDisplayName(report);
+    // 生成友好的报告标题（带ID）
+    const reportTitle = getReportTitleWithId(report);
 
     return `
         <div class="col-md-6 col-lg-4">
@@ -1063,6 +1160,33 @@ function getReportDisplayName(report) {
     }
 
     return id;
+}
+
+// 生成报告的完整标题（包含唯一ID）
+function getReportTitleWithId(report) {
+    const displayName = getReportDisplayName(report);
+    const id = report.id || '';
+
+    // 提取简短的ID标识（最后的时间戳部分）
+    let shortId = '';
+    if (id.includes('_')) {
+        const parts = id.split('_');
+        // 取最后两部分作为ID，如 "20251205_162626"
+        if (parts.length >= 2) {
+            shortId = parts.slice(-2).join('_');
+        } else {
+            shortId = parts[parts.length - 1];
+        }
+    } else {
+        shortId = id.slice(-12); // 取最后12位
+    }
+
+    // 如果displayName已经包含了ID信息，直接返回
+    if (displayName === id || displayName.includes(shortId)) {
+        return displayName;
+    }
+
+    return `${displayName} #${shortId}`;
 }
 
 // 格式化ID中的时间戳
@@ -1329,8 +1453,8 @@ function displayReportDetail(report) {
     const failed = summary.failed || 0;
     const passRate = total > 0 ? Math.round((passed / total) * 100) : 0;
 
-    // 使用友好名称作为标题
-    const reportTitle = getReportDisplayName(report);
+    // 使用友好名称作为标题（带ID）
+    const reportTitle = getReportTitleWithId(report);
     document.getElementById('detail-title').textContent = reportTitle;
     document.getElementById('detail-time').textContent = report.timestamp ?
         new Date(report.timestamp).toLocaleString('zh-CN') : '未知时间';
@@ -1465,9 +1589,26 @@ async function loadAIAnalysisForReport(reportId) {
 function displayAIAnalysis(data) {
     const content = data.analysis || data.content || '暂无分析内容';
 
+    // 使用 marked.js 渲染 Markdown 内容
+    let renderedContent;
+    try {
+        // 配置 marked 选项
+        marked.setOptions({
+            breaks: true,      // 支持 GitHub 风格的换行
+            gfm: true,         // 支持 GitHub Flavored Markdown
+            headerIds: false,  // 不生成 header ID
+            mangle: false      // 不转义邮箱地址
+        });
+        renderedContent = marked.parse(content);
+    } catch (e) {
+        console.error('Markdown 渲染失败:', e);
+        // 降级为纯文本显示
+        renderedContent = `<pre style="white-space: pre-wrap;">${escapeHtml(content)}</pre>`;
+    }
+
     document.getElementById('ai-report-content').innerHTML = `
-        <div class="ai-analysis-content" style="white-space: pre-wrap; line-height: 1.8;">
-            ${escapeHtml(content)}
+        <div class="ai-analysis-content">
+            ${renderedContent}
         </div>
     `;
 }
