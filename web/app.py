@@ -308,7 +308,9 @@ def parse_progress_line(line, task_id):
         return
 
     # 解析测试完成标记（用于保存商品测试结果）
-    if '测试完成' in line and '总耗时' in line:
+    # 注意：run_product_test.py 输出 "测试完成" 和 "总耗时" 是分开的两行
+    # 所以只检测 "测试完成" 即可
+    if '测试完成' in line and '步骤统计' not in line:
         _save_product_result(task_id)
         return
 
@@ -442,10 +444,18 @@ def _get_current_steps(task_id):
 
 def _save_product_result(task_id):
     """保存当前商品的测试结果到product_results"""
+    if task_id not in running_tasks:
+        return
+
     if 'current_product' not in running_tasks[task_id]:
         return
 
     current = running_tasks[task_id]['current_product']
+
+    # 检查是否有有效的步骤数据
+    if not current.get('steps'):
+        return
+
     product_id = current.get('id', f"product_{current.get('index', 0)}")
 
     # 保存到product_results
@@ -455,7 +465,7 @@ def _save_product_result(task_id):
     running_tasks[task_id]['product_results'][product_id] = {
         'name': current.get('name', ''),
         'index': current.get('index', 0),
-        'steps': current.get('steps', []),
+        'steps': current.get('steps', []).copy(),  # 复制步骤列表
         'status': 'passed' if all(s.get('status') == 'passed' for s in current.get('steps', [])) else 'failed'
     }
 
@@ -463,6 +473,9 @@ def _save_product_result(task_id):
     if 'test_steps' not in running_tasks[task_id]:
         running_tasks[task_id]['test_steps'] = []
     running_tasks[task_id]['test_steps'].extend(current.get('steps', []))
+
+    # 清除current_product，准备下一个商品测试
+    del running_tasks[task_id]['current_product']
 
 
 @app.route('/')
@@ -659,7 +672,9 @@ def test_status(task_id):
     if task_id not in running_tasks:
         return jsonify({'error': 'Task not found'}), 404
 
-    return jsonify(running_tasks[task_id])
+    # 排除不可序列化的字段（如process对象）
+    task_data = {k: v for k, v in running_tasks[task_id].items() if k != 'process'}
+    return jsonify(task_data)
 
 
 @app.route('/api/tests/stop/<task_id>', methods=['POST'])

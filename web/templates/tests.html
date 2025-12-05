@@ -99,6 +99,137 @@
     opacity: 0.6;
     cursor: not-allowed;
 }
+
+/* 进度条酷炫效果 */
+.progress-enhanced {
+    position: relative;
+    overflow: visible !important;
+    background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%) !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 2px 10px rgba(0, 0, 0, 0.5);
+    border: none !important;
+}
+
+.progress-bar-enhanced {
+    position: relative;
+    background: linear-gradient(90deg,
+        #00d4ff 0%,
+        #0099ff 25%,
+        #6366f1 50%,
+        #8b5cf6 75%,
+        #a855f7 100%) !important;
+    background-size: 200% 100% !important;
+    animation: gradientShift 3s ease infinite !important;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6), 0 0 40px rgba(139, 92, 246, 0.4);
+    transition: width 0.5s ease-out;
+    min-height: 28px;
+    overflow: hidden;
+}
+
+/* 渐变流动效果 */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* 脉冲光效 */
+.progress-bar-enhanced::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%);
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { opacity: 0.3; transform: translateX(-100%); }
+    50% { opacity: 0.8; transform: translateX(100%); }
+}
+
+/* 粒子扫描线效果 */
+.progress-bar-enhanced::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.8) 50%,
+        transparent 100%);
+    animation: scan-line 3s linear infinite;
+}
+
+@keyframes scan-line {
+    0% { left: -50%; }
+    100% { left: 150%; }
+}
+
+/* 进度条外框发光 */
+.progress-enhanced::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(90deg, #00d4ff, #6366f1, #a855f7, #00d4ff);
+    background-size: 300% 100%;
+    animation: border-glow 4s linear infinite;
+    border-radius: 14px;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+@keyframes border-glow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+
+/* 进度文字样式 */
+.progress-text-enhanced {
+    position: relative;
+    z-index: 10;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(99, 102, 241, 0.6);
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+/* 完成状态特效 */
+.progress-bar-enhanced.progress-bar-completed {
+    background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7, #34d399, #10b981) !important;
+    background-size: 200% 100% !important;
+    animation: success-pulse 2s ease infinite !important;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.8) !important;
+}
+
+@keyframes success-pulse {
+    0%, 100% { background-position: 0% 50%; box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); }
+    50% { background-position: 100% 50%; box-shadow: 0 0 40px rgba(16, 185, 129, 0.9); }
+}
+
+/* 失败状态特效 */
+.progress-bar-enhanced.progress-bar-failed {
+    background: linear-gradient(90deg, #ef4444, #f87171, #fca5a5, #f87171, #ef4444) !important;
+    background-size: 200% 100% !important;
+    animation: fail-pulse 1.5s ease infinite !important;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.8) !important;
+}
+
+@keyframes fail-pulse {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
 </style>
 {% endblock %}
 
@@ -311,12 +442,18 @@
                 <span id="test-status-message">正在初始化测试环境...</span>
                 <span class="spinner-border spinner-border-sm text-primary" id="test-spinner"></span>
             </div>
-            <div class="progress" style="height: 25px;">
-                <div class="progress-bar progress-bar-striped progress-bar-animated"
+            <!-- 增强版进度条 -->
+            <div class="progress progress-enhanced" style="height: 28px;">
+                <div class="progress-bar progress-bar-enhanced"
                      id="test-progress-bar"
                      role="progressbar" style="width: 0%">
-                    <span id="test-progress-text">0%</span>
+                    <span id="test-progress-text" class="progress-text-enhanced">0%</span>
                 </div>
+            </div>
+            <!-- 详细进度信息 -->
+            <div class="d-flex justify-content-between mt-1">
+                <small class="text-muted" id="progress-detail-left"></small>
+                <small class="text-muted" id="progress-detail-right"></small>
             </div>
         </div>
 
@@ -423,6 +560,13 @@ const FULL_TEST_STEPS = [
 ];
 
 let currentTestMode = null;
+
+// 进度条平滑插值相关变量
+let currentDisplayProgress = 0;  // 当前显示的进度百分比
+let targetProgress = 0;          // 目标进度百分比
+let progressAnimationFrame = null;  // 动画帧ID
+let totalExpectedSteps = 0;      // 预期总步骤数
+let totalExpectedProducts = 0;   // 预期商品总数
 
 // 页面加载
 document.addEventListener('DOMContentLoaded', () => {
@@ -1036,6 +1180,37 @@ function showTestExecutionCard() {
     const card = document.getElementById('test-execution-card');
     card.style.display = 'block';
 
+    // 重置进度条状态变量
+    currentDisplayProgress = 0;
+    targetProgress = 0;
+    totalExpectedSteps = 0;
+    totalExpectedProducts = 0;
+
+    // 取消正在进行的动画
+    if (progressAnimationFrame) {
+        cancelAnimationFrame(progressAnimationFrame);
+        progressAnimationFrame = null;
+    }
+
+    // 重置进度条样式和内容
+    const progressBar = document.getElementById('test-progress-bar');
+    const progressText = document.getElementById('test-progress-text');
+
+    // 移除所有可能的状态类
+    progressBar.className = 'progress-bar progress-bar-enhanced';
+    progressBar.style.width = '0%';
+    progressText.textContent = '0%';
+
+    // 重置详细信息
+    const detailLeft = document.getElementById('progress-detail-left');
+    const detailRight = document.getElementById('progress-detail-right');
+    if (detailLeft) detailLeft.textContent = '';
+    if (detailRight) detailRight.textContent = '';
+
+    // 重置spinner
+    const spinner = document.getElementById('test-spinner');
+    if (spinner) spinner.style.display = '';
+
     testStartTime = Date.now();
     updateElapsedTime();
     timerInterval = setInterval(updateElapsedTime, 1000);
@@ -1065,25 +1240,34 @@ function updateTestStatus(status) {
     const message = document.getElementById('test-status-message');
     const progressBar = document.getElementById('test-progress-bar');
     const progressText = document.getElementById('test-progress-text');
+    const detailLeft = document.getElementById('progress-detail-left');
+    const detailRight = document.getElementById('progress-detail-right');
 
-    // 更新进度条
-    if (status.progress) {
-        const { current, total, message: msg } = status.progress;
-        if (total > 0) {
-            const percentage = Math.round((current / total) * 100);
-            progressBar.style.width = percentage + '%';
-            progressText.textContent = percentage + '%';
-        }
-        if (msg) {
-            message.textContent = msg;
-        }
-    }
-
-    // 检查是否是多商品测试（有product_results）
-    const isMultiProduct = status.product_results && Object.keys(status.product_results).length > 0;
+    // 检查是否是多商品测试
+    // 条件：有product_results（已完成的商品）或者有current_product（正在测试的商品）
+    const hasProductResults = status.product_results && Object.keys(status.product_results).length > 0;
+    const hasCurrentProduct = status.current_product && status.current_product.name;
+    const isMultiProduct = hasProductResults || hasCurrentProduct;
 
     if (isMultiProduct) {
-        // 多商品测试：按商品分组显示
+        // 多商品测试：使用基于步骤的进度计算
+        const progressInfo = calculateStepBasedProgress(status);
+
+        // 使用平滑动画更新进度条
+        setProgressWithAnimation(progressInfo.percentage);
+
+        // 更新详细进度信息
+        if (detailLeft && detailRight) {
+            detailLeft.textContent = `已完成 ${progressInfo.completedSteps}/${progressInfo.totalSteps} 步骤`;
+            detailRight.textContent = `商品 ${progressInfo.completedProducts}/${progressInfo.totalProducts}`;
+        }
+
+        // 更新状态消息
+        if (status.progress && status.progress.message) {
+            message.textContent = status.progress.message;
+        }
+
+        // 按商品分组显示步骤
         updateMultiProductSteps(status);
     } else if (status.test_steps && status.test_steps.length > 0) {
         // 单商品测试：显示步骤列表
@@ -1109,8 +1293,25 @@ function updateTestStatus(status) {
             s.status === 'passed' || s.status === 'failed' || s.status === 'skipped'
         ).length;
         const percentage = Math.round((completedSteps / totalSteps) * 100);
-        progressBar.style.width = percentage + '%';
-        progressText.textContent = percentage + '%';
+
+        // 使用平滑动画更新进度
+        setProgressWithAnimation(percentage);
+
+        // 更新详细进度信息
+        if (detailLeft && detailRight) {
+            detailLeft.textContent = `步骤 ${completedSteps}/${totalSteps}`;
+            detailRight.textContent = currentTestMode === 'quick' ? '快速测试' : '全面测试';
+        }
+    } else if (status.progress) {
+        // 初始化阶段：使用后端返回的进度
+        const { current, total, message: msg } = status.progress;
+        if (total > 0) {
+            const percentage = Math.round((current / total) * 100);
+            setProgressWithAnimation(percentage);
+        }
+        if (msg) {
+            message.textContent = msg;
+        }
     }
 
     // 更新日志
@@ -1123,20 +1324,22 @@ function updateTestStatus(status) {
         message.textContent = message.textContent || '测试正在执行中...';
     } else if (status.status === 'completed') {
         message.textContent = '✓ 测试执行完成';
+        // 完成时直接设置100%（不用动画）
+        targetProgress = 100;
+        currentDisplayProgress = 100;
         progressBar.style.width = '100%';
         progressText.textContent = '100%';
-        progressBar.classList.remove('progress-bar-animated');
-        progressBar.classList.add('bg-success');
+        progressBar.classList.add('progress-bar-completed');
         document.getElementById('test-spinner').style.display = 'none';
     } else if (status.status === 'failed') {
         message.textContent = '✗ 测试执行失败';
-        progressBar.classList.remove('progress-bar-animated');
-        progressBar.classList.add('bg-danger');
+        progressBar.classList.add('progress-bar-failed');
         document.getElementById('test-spinner').style.display = 'none';
     } else if (status.status === 'stopped') {
         message.textContent = '⊘ 测试已停止';
-        progressBar.classList.remove('progress-bar-animated');
-        progressBar.classList.add('bg-secondary');
+        // 停止时显示灰色渐变
+        progressBar.style.background = 'linear-gradient(90deg, #6b7280, #9ca3af, #6b7280)';
+        progressBar.style.animation = 'none';
         document.getElementById('test-spinner').style.display = 'none';
     }
 }
@@ -1158,31 +1361,35 @@ function updateMultiProductSteps(status) {
     Object.entries(productResults).forEach(([productId, result]) => {
         const passedCount = result.steps.filter(s => s.status === 'passed').length;
         const failedCount = result.steps.filter(s => s.status === 'failed').length;
+        const skippedCount = result.steps.filter(s => s.status === 'skipped').length;
         const totalCount = result.steps.length;
         const statusClass = failedCount > 0 ? 'border-danger' : 'border-success';
         const statusIcon = failedCount > 0 ? '✗' : '✓';
         const statusColor = failedCount > 0 ? 'text-danger' : 'text-success';
+        const headerBg = failedCount > 0 ? 'bg-danger-subtle' : 'bg-success-subtle';
+        const safeProductId = productId.replace(/[^a-zA-Z0-9]/g, '_');
 
         html += `
             <div class="card ${statusClass} mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center"
+                <div class="card-header ${headerBg} d-flex justify-content-between align-items-center"
                      style="cursor: pointer;"
                      data-bs-toggle="collapse"
-                     data-bs-target="#product-${productId.replace(/[^a-zA-Z0-9]/g, '_')}">
+                     data-bs-target="#product-${safeProductId}">
                     <div>
-                        <span class="${statusColor} me-2">${statusIcon}</span>
+                        <span class="${statusColor} me-2 fs-5">${statusIcon}</span>
                         <strong>${escapeHtml(result.name)}</strong>
                         <small class="text-muted ms-2">(${productId})</small>
                     </div>
                     <div>
                         <span class="badge bg-success me-1">${passedCount} 通过</span>
-                        ${failedCount > 0 ? `<span class="badge bg-danger">${failedCount} 失败</span>` : ''}
+                        ${failedCount > 0 ? `<span class="badge bg-danger me-1">${failedCount} 失败</span>` : ''}
+                        ${skippedCount > 0 ? `<span class="badge bg-warning me-1">${skippedCount} 跳过</span>` : ''}
                         <i class="bi bi-chevron-down ms-2"></i>
                     </div>
                 </div>
-                <div class="collapse" id="product-${productId.replace(/[^a-zA-Z0-9]/g, '_')}">
-                    <div class="card-body py-2">
-                        ${generateStepsHtml(result.steps)}
+                <div class="collapse" id="product-${safeProductId}">
+                    <div class="card-body">
+                        ${generateStepsHtml(result.steps, safeProductId + '-')}
                     </div>
                 </div>
             </div>
@@ -1191,9 +1398,10 @@ function updateMultiProductSteps(status) {
 
     // 当前正在测试的商品
     if (currentProduct && currentProduct.name) {
+        const safeCurrentId = (currentProduct.id || 'current').replace(/[^a-zA-Z0-9]/g, '_');
         html += `
             <div class="card border-primary mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center bg-primary text-white">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                     <div>
                         <span class="spinner-border spinner-border-sm me-2"></span>
                         <strong>${escapeHtml(currentProduct.name)}</strong>
@@ -1201,9 +1409,9 @@ function updateMultiProductSteps(status) {
                     </div>
                     <span class="badge bg-light text-primary">进行中</span>
                 </div>
-                <div class="card-body py-2">
+                <div class="card-body">
                     ${currentProduct.steps && currentProduct.steps.length > 0
-                        ? generateStepsHtml(currentProduct.steps)
+                        ? generateStepsHtml(currentProduct.steps, safeCurrentId + '-')
                         : '<div class="text-muted text-center py-2">正在初始化测试步骤...</div>'}
                 </div>
             </div>
@@ -1217,35 +1425,108 @@ function updateMultiProductSteps(status) {
     stepsList.innerHTML = html;
 }
 
-// 生成步骤HTML（用于多商品分组）
-function generateStepsHtml(steps) {
+// 生成步骤HTML（用于多商品分组，与单商品测试完全一致的卡片样式）
+function generateStepsHtml(steps, idPrefix = '') {
     if (!steps || steps.length === 0) return '<div class="text-muted">暂无步骤</div>';
 
     return steps.map(step => {
-        let statusIcon = '', statusClass = '', statusBadge = '';
+        let statusIcon = '';
+        let statusClass = '';
+        let statusBadge = '';
 
         if (step.status === 'passed') {
-            statusIcon = '✓'; statusClass = 'text-success'; statusBadge = '<span class="badge bg-success">通过</span>';
+            statusIcon = '✓';
+            statusClass = 'border-success test-step-card';
+            statusBadge = '<span class="badge bg-success">通过</span>';
         } else if (step.status === 'failed') {
-            statusIcon = '✗'; statusClass = 'text-danger'; statusBadge = '<span class="badge bg-danger">失败</span>';
+            statusIcon = '✗';
+            statusClass = 'border-danger test-step-card';
+            statusBadge = '<span class="badge bg-danger">失败</span>';
         } else if (step.status === 'skipped') {
-            statusIcon = '⊘'; statusClass = 'text-warning'; statusBadge = '<span class="badge bg-warning">跳过</span>';
+            statusIcon = '⊘';
+            statusClass = 'border-warning test-step-card';
+            statusBadge = '<span class="badge bg-warning">跳过</span>';
         } else if (step.status === 'running') {
-            statusIcon = '⋯'; statusClass = 'text-primary'; statusBadge = '<span class="badge bg-primary">进行中</span>';
+            statusIcon = '⋯';
+            statusClass = 'border-primary test-step-card';
+            statusBadge = '<span class="badge bg-primary"><span class="spinner-border spinner-border-sm me-1"></span>进行中</span>';
         } else {
-            statusIcon = '○'; statusClass = 'text-muted'; statusBadge = '<span class="badge bg-secondary">待执行</span>';
+            statusIcon = '○';
+            statusClass = 'border-secondary test-step-card';
+            statusBadge = '<span class="badge bg-secondary">待执行</span>';
         }
 
-        const durationHtml = step.duration !== undefined ? `<small class="text-muted ms-2">${step.duration}s</small>` : '';
+        let durationHtml = '';
+        if (step.duration !== undefined) {
+            durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
+        }
+
+        // 生成问题详情HTML（如果存在）
+        let issueDetailsHtml = '';
+        if (step.issue_details) {
+            const details = step.issue_details;
+            const stepId = `${idPrefix}issue-${step.number}`;
+
+            const naturalExplanation = generateNaturalExplanation(details);
+
+            const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
+                ? `<div class="mt-2"><strong>JavaScript错误:</strong>
+                     <ul class="mb-0 mt-1">
+                       ${details.js_errors.slice(0, 3).map(err => `<li class="text-danger small">${escapeHtml(err)}</li>`).join('')}
+                       ${details.js_errors.length > 3 ? `<li class="text-muted small">...还有 ${details.js_errors.length - 3} 个错误</li>` : ''}
+                     </ul>
+                   </div>`
+                : '';
+
+            const rootCauseHtml = formatRootCause(details.root_cause || 'N/A');
+
+            issueDetailsHtml = `
+                <div class="alert alert-danger mt-2 mb-0" style="background-color: #f8d7da; border-left: 4px solid #dc3545;">
+                    <div class="d-flex align-items-start">
+                        <span class="me-2">🐛</span>
+                        <div class="flex-grow-1">
+                            <strong>发现Bug:</strong> ${escapeHtml(naturalExplanation)}
+                            <div class="mt-2">
+                                <a class="text-decoration-none small" data-bs-toggle="collapse" href="#${stepId}" role="button" aria-expanded="false">
+                                    <i class="bi bi-chevron-down"></i> 查看详细技术信息与修复建议
+                                </a>
+                            </div>
+                            <div class="collapse mt-2" id="${stepId}">
+                                <div class="card card-body bg-light small py-2">
+                                    <div class="mb-1"><strong>📍 场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
+                                    <div class="mb-1"><strong>🖱️ 操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
+                                    <div class="mb-1"><strong>❌ 问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
+                                    <div class="mb-2"><strong>🔍 根因分析:</strong></div>
+                                    <div class="root-cause-box" style="background: #fff3cd; border-radius: 4px; padding: 10px; margin-bottom: 8px; white-space: pre-wrap; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; line-height: 1.5;">${rootCauseHtml}</div>
+                                    ${jsErrorsHtml}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
 
         return `
-            <div class="d-flex justify-content-between align-items-center py-1 border-bottom">
-                <div>
-                    <span class="${statusClass} me-2">${statusIcon}</span>
-                    <span>步骤${step.number}: ${escapeHtml(step.name)}</span>
-                    ${durationHtml}
+            <div class="card ${statusClass} mb-2">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center">
+                                <span class="step-icon">${statusIcon}</span>
+                                <strong>步骤 ${step.number}: ${escapeHtml(step.name)}</strong>
+                                ${durationHtml}
+                            </div>
+                            ${step.description ? `<div class="step-description">📝 ${escapeHtml(step.description)}</div>` : ''}
+                            ${step.result ? `<div class="step-result">💡 ${escapeHtml(step.result)}</div>` : ''}
+                            ${step.error ? `<div class="step-error">⚠️ ${escapeHtml(step.error)}</div>` : ''}
+                            ${issueDetailsHtml}
+                        </div>
+                        <div>
+                            ${statusBadge}
+                        </div>
+                    </div>
                 </div>
-                ${statusBadge}
             </div>
         `;
     }).join('');
@@ -1412,7 +1693,12 @@ function toggleTestLogs() {
 
 // 测试完成
 function onTestComplete(result) {
-    hideTestExecutionCard();
+    // 延迟隐藏执行卡片，让用户看到完成效果（绿色脉动）
+    setTimeout(() => {
+        hideTestExecutionCard();
+        // 显示详细结果
+        showDetailedResults(result);
+    }, 2000);
 
     if (result.status === 'completed' || result.status === 'failed') {
         // 🔧 修复: 统计失败步骤数来判定是否真正通过
@@ -1424,8 +1710,6 @@ function onTestComplete(result) {
         } else {
             utils.showToast('测试执行完成！', 'success');
         }
-        // 显示详细结果
-        showDetailedResults(result);
     } else {
         utils.showToast('测试执行失败', 'error');
     }
@@ -1436,7 +1720,115 @@ function showDetailedResults(result) {
     const resultsCard = document.getElementById('current-test-results');
     resultsCard.style.display = 'block';
 
-    // 🔧 修复: 合并预定义步骤与后端返回的步骤，确保所有步骤都显示
+    // 检查是否是多商品测试（有product_results）
+    const isMultiProduct = result.product_results && Object.keys(result.product_results).length > 0;
+
+    if (isMultiProduct) {
+        // 多商品测试结果显示
+        showMultiProductResults(result, resultsCard);
+    } else {
+        // 单商品测试结果显示
+        showSingleProductResults(result, resultsCard);
+    }
+
+    // 滚动到结果区域
+    resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// 显示多商品测试结果
+function showMultiProductResults(result, resultsCard) {
+    const productResults = result.product_results || {};
+    const productCount = Object.keys(productResults).length;
+
+    // 统计所有商品的步骤
+    let totalPassed = 0, totalFailed = 0, totalSkipped = 0, totalSteps = 0;
+    let productsPassed = 0, productsFailed = 0;
+
+    Object.values(productResults).forEach(product => {
+        const steps = product.steps || [];
+        totalPassed += steps.filter(s => s.status === 'passed').length;
+        totalFailed += steps.filter(s => s.status === 'failed').length;
+        totalSkipped += steps.filter(s => s.status === 'skipped').length;
+        totalSteps += steps.length;
+
+        if (steps.some(s => s.status === 'failed')) {
+            productsFailed++;
+        } else {
+            productsPassed++;
+        }
+    });
+
+    // 更新卡片头部状态
+    const cardHeader = resultsCard.querySelector('.card-header');
+    if (totalFailed === 0) {
+        cardHeader.classList.remove('bg-danger', 'bg-warning');
+        cardHeader.classList.add('bg-success');
+        cardHeader.querySelector('span').innerHTML = `<i class="bi bi-check-circle"></i> 测试完成 - ${productCount} 个商品全部通过`;
+    } else {
+        cardHeader.classList.remove('bg-success', 'bg-warning');
+        cardHeader.classList.add('bg-danger');
+        cardHeader.querySelector('span').innerHTML = `<i class="bi bi-x-circle"></i> 测试完成 - ${productsFailed}/${productCount} 个商品存在失败`;
+    }
+
+    // 更新总体统计
+    const allPassed = totalFailed === 0;
+    document.getElementById('result-status-icon').textContent = allPassed ? '✓' : '✗';
+    document.getElementById('result-status').textContent = allPassed ? 'PASSED' : 'FAILED';
+    document.getElementById('result-status').className = allPassed ? 'mb-0 text-success' : 'mb-0 text-danger';
+
+    document.getElementById('result-duration').textContent = (result.result?.duration || 0).toFixed(2) + 's';
+    document.getElementById('result-passed').textContent = totalPassed;
+    document.getElementById('result-total').textContent = totalSteps;
+    document.getElementById('result-failed').textContent = totalFailed;
+
+    // 显示按商品分组的详细步骤
+    const stepsContainer = document.getElementById('result-steps-container');
+    let html = `<h6 class="mb-3">测试详情 (${productCount} 个商品)</h6>`;
+
+    Object.entries(productResults).forEach(([productId, product]) => {
+        const steps = product.steps || [];
+        const passedCount = steps.filter(s => s.status === 'passed').length;
+        const failedCount = steps.filter(s => s.status === 'failed').length;
+        const skippedCount = steps.filter(s => s.status === 'skipped').length;
+        const statusClass = failedCount > 0 ? 'border-danger' : 'border-success';
+        const statusIcon = failedCount > 0 ? '✗' : '✓';
+        const statusColor = failedCount > 0 ? 'text-danger' : 'text-success';
+        const headerBg = failedCount > 0 ? 'bg-danger-subtle' : 'bg-success-subtle';
+        const safeProductId = 'result-' + productId.replace(/[^a-zA-Z0-9]/g, '_');
+
+        html += `
+            <div class="card ${statusClass} mb-3">
+                <div class="card-header ${headerBg} d-flex justify-content-between align-items-center"
+                     style="cursor: pointer;"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#${safeProductId}">
+                    <div>
+                        <span class="${statusColor} me-2 fs-5">${statusIcon}</span>
+                        <strong>${escapeHtml(product.name)}</strong>
+                        <small class="text-muted ms-2">(${productId})</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-success me-1">${passedCount} 通过</span>
+                        ${failedCount > 0 ? `<span class="badge bg-danger me-1">${failedCount} 失败</span>` : ''}
+                        ${skippedCount > 0 ? `<span class="badge bg-warning me-1">${skippedCount} 跳过</span>` : ''}
+                        <i class="bi bi-chevron-down ms-2"></i>
+                    </div>
+                </div>
+                <div class="collapse" id="${safeProductId}">
+                    <div class="card-body">
+                        ${generateStepsHtml(steps, safeProductId + '-')}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    stepsContainer.innerHTML = html;
+}
+
+// 显示单商品测试结果
+function showSingleProductResults(result, resultsCard) {
+    // 合并预定义步骤与后端返回的步骤，确保所有步骤都显示
     const predefinedSteps = currentTestMode === 'quick' ? QUICK_TEST_STEPS : FULL_TEST_STEPS;
     const backendSteps = result.test_steps || [];
 
@@ -1485,109 +1877,13 @@ function showDetailedResults(result) {
     document.getElementById('result-total').textContent = totalCount;
     document.getElementById('result-failed').textContent = failedCount;
 
-    // 显示详细步骤
+    // 显示详细步骤 - 使用与多商品一致的generateStepsHtml
     const stepsContainer = document.getElementById('result-steps-container');
     if (steps.length > 0) {
-        stepsContainer.innerHTML = '<h6 class="mb-3">详细步骤</h6>' +
-            steps.map(step => {
-                let statusIcon = '';
-                let statusClass = '';
-                let statusBadge = '';
-
-                if (step.status === 'passed') {
-                    statusIcon = '✓';
-                    statusClass = 'border-success';
-                    statusBadge = '<span class="badge bg-success">通过</span>';
-                } else if (step.status === 'failed') {
-                    statusIcon = '✗';
-                    statusClass = 'border-danger';
-                    statusBadge = '<span class="badge bg-danger">失败</span>';
-                } else if (step.status === 'skipped') {
-                    statusIcon = '⊘';
-                    statusClass = 'border-warning';
-                    statusBadge = '<span class="badge bg-warning">跳过</span>';
-                }
-
-                let durationHtml = '';
-                if (step.duration !== undefined) {
-                    durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
-                }
-
-                // 生成问题详情HTML（如果存在）- 使用与updateTestSteps相同的格式
-                let issueDetailsHtml = '';
-                if (step.issue_details) {
-                    const details = step.issue_details;
-                    const resultStepId = `result-issue-${step.number}`;
-                    const naturalExplanation = generateNaturalExplanation(details);
-
-                    const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
-                        ? `<div class="mt-2"><strong>JavaScript错误:</strong>
-                             <ul class="mb-0 mt-1">
-                               ${details.js_errors.slice(0, 3).map(err => `<li class="text-danger small">${escapeHtml(err)}</li>`).join('')}
-                               ${details.js_errors.length > 3 ? `<li class="text-muted small">...还有 ${details.js_errors.length - 3} 个错误</li>` : ''}
-                             </ul>
-                           </div>`
-                        : '';
-
-                    // 🔧 改进: 根因分析支持换行和格式化显示
-                    const rootCauseHtml = formatRootCause(details.root_cause || 'N/A');
-
-                    issueDetailsHtml = `
-                        <div class="alert alert-danger mt-2 mb-0" style="background-color: #f8d7da; border-left: 4px solid #dc3545;">
-                            <div class="d-flex align-items-start">
-                                <span class="me-2">🐛</span>
-                                <div class="flex-grow-1">
-                                    <strong>发现Bug:</strong> ${escapeHtml(naturalExplanation)}
-                                    <div class="mt-2">
-                                        <a class="text-decoration-none small" data-bs-toggle="collapse" href="#${resultStepId}" role="button" aria-expanded="false">
-                                            <i class="bi bi-chevron-down"></i> 查看详细技术信息与修复建议
-                                        </a>
-                                    </div>
-                                    <div class="collapse mt-2" id="${resultStepId}">
-                                        <div class="card card-body bg-light small py-2">
-                                            <div class="mb-1"><strong>📍 场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
-                                            <div class="mb-1"><strong>🖱️ 操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
-                                            <div class="mb-1"><strong>❌ 问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
-                                            <div class="mb-2"><strong>🔍 根因分析:</strong></div>
-                                            <div class="root-cause-box" style="background: #fff3cd; border-radius: 4px; padding: 10px; margin-bottom: 8px; white-space: pre-wrap; font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; line-height: 1.5;">${rootCauseHtml}</div>
-                                            ${jsErrorsHtml}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                return `
-                    <div class="card ${statusClass} mb-2">
-                        <div class="card-body py-3">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <div class="d-flex align-items-center">
-                                        <span class="step-icon">${statusIcon}</span>
-                                        <strong>步骤 ${step.number}: ${escapeHtml(step.name)}</strong>
-                                        ${durationHtml}
-                                    </div>
-                                    ${step.description ? `<div class="step-description">📝 ${escapeHtml(step.description)}</div>` : ''}
-                                    ${step.result ? `<div class="step-result">💡 ${escapeHtml(step.result)}</div>` : ''}
-                                    ${step.error ? `<div class="step-error">⚠️ ${escapeHtml(step.error)}</div>` : ''}
-                                    ${issueDetailsHtml}
-                                </div>
-                                <div>
-                                    ${statusBadge}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+        stepsContainer.innerHTML = '<h6 class="mb-3">详细步骤</h6>' + generateStepsHtml(steps, 'result-single-');
     } else {
         stepsContainer.innerHTML = '<p class="text-muted">无步骤信息</p>';
     }
-
-    // 滚动到结果区域
-    resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // 清除当前结果
@@ -1612,6 +1908,107 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// 进度条平滑插值动画函数
+function animateProgressBar() {
+    const progressBar = document.getElementById('test-progress-bar');
+    const progressText = document.getElementById('test-progress-text');
+
+    if (!progressBar || !progressText) return;
+
+    // 计算插值步长（每帧移动的百分比）
+    // 使用ease-out效果：距离越远速度越快，接近目标时减速
+    const diff = targetProgress - currentDisplayProgress;
+    const step = diff * 0.08; // 每帧移动差值的8%（更平滑）
+
+    // 当差值足够小时，直接设置为目标值
+    if (Math.abs(diff) < 0.1) {
+        currentDisplayProgress = targetProgress;
+    } else {
+        currentDisplayProgress += step;
+    }
+
+    // 更新UI - 保留一位小数用于内部计算，显示取整
+    const displayValue = Math.round(currentDisplayProgress);
+    progressBar.style.width = currentDisplayProgress + '%';
+    progressText.textContent = displayValue + '%';
+
+    // 如果还没到达目标，继续动画
+    if (Math.abs(targetProgress - currentDisplayProgress) >= 0.1) {
+        progressAnimationFrame = requestAnimationFrame(animateProgressBar);
+    } else {
+        progressAnimationFrame = null;
+    }
+}
+
+// 设置目标进度并启动动画
+function setProgressWithAnimation(percentage) {
+    targetProgress = Math.min(100, Math.max(0, percentage));
+
+    // 如果动画未运行，启动动画
+    if (!progressAnimationFrame) {
+        progressAnimationFrame = requestAnimationFrame(animateProgressBar);
+    }
+}
+
+// 计算基于步骤的进度百分比（多商品测试）
+function calculateStepBasedProgress(status) {
+    const productResults = status.product_results || {};
+    const currentProduct = status.current_product;
+    const stepsPerProduct = currentTestMode === 'quick' ? 5 : 12;
+
+    // 计算已完成商品的步骤数
+    let completedSteps = 0;
+    Object.values(productResults).forEach(result => {
+        if (result.steps) {
+            completedSteps += result.steps.filter(s =>
+                s.status === 'passed' || s.status === 'failed' || s.status === 'skipped'
+            ).length;
+        }
+    });
+
+    // 加上当前正在测试商品的已完成步骤
+    if (currentProduct && currentProduct.steps) {
+        completedSteps += currentProduct.steps.filter(s =>
+            s.status === 'passed' || s.status === 'failed' || s.status === 'skipped'
+        ).length;
+    }
+
+    // 计算总步骤数
+    // 如果知道总商品数，用总商品数 * 每商品步骤数
+    // 否则用已知商品数估算
+    let knownProducts = Object.keys(productResults).length;
+    if (currentProduct && currentProduct.name) {
+        knownProducts += 1;
+    }
+
+    // 尝试从progress中获取总商品数
+    if (status.progress && status.progress.total > 0) {
+        totalExpectedProducts = status.progress.total;
+        totalExpectedSteps = totalExpectedProducts * stepsPerProduct;
+    } else if (totalExpectedProducts > 0) {
+        // 使用之前记录的值
+        totalExpectedSteps = totalExpectedProducts * stepsPerProduct;
+    } else if (knownProducts > 0) {
+        // 回退：使用已知商品数估算
+        totalExpectedSteps = Math.max(knownProducts * stepsPerProduct, completedSteps + stepsPerProduct);
+    } else {
+        totalExpectedSteps = stepsPerProduct; // 最小值
+    }
+
+    // 计算百分比
+    const percentage = totalExpectedSteps > 0
+        ? Math.round((completedSteps / totalExpectedSteps) * 100)
+        : 0;
+
+    return {
+        percentage: Math.min(percentage, 99), // 不超过99%，留给完成状态
+        completedSteps,
+        totalSteps: totalExpectedSteps,
+        completedProducts: Object.keys(productResults).length,
+        totalProducts: totalExpectedProducts || knownProducts
+    };
 }
 
 // 🔧 格式化根因分析内容，支持换行和特殊标记

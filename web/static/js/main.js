@@ -104,7 +104,7 @@ function getStatusBadge(status) {
 
 // 工具函数：轮询任务状态
 async function pollTaskStatus(taskId, onUpdate, onComplete) {
-    const maxAttempts = 120; // 最多轮询10分钟（每5秒一次）
+    const maxAttempts = 600; // 最多轮询10分钟（每1秒一次）
     let attempts = 0;
 
     const poll = async () => {
@@ -116,7 +116,7 @@ async function pollTaskStatus(taskId, onUpdate, onComplete) {
                 onUpdate(data);
             }
 
-            if (data.status === 'completed' || data.status === 'failed' || data.status === 'timeout' || data.status === 'error') {
+            if (data.status === 'completed' || data.status === 'failed' || data.status === 'timeout' || data.status === 'error' || data.status === 'stopped') {
                 if (onComplete) {
                     onComplete(data);
                 }
@@ -125,7 +125,7 @@ async function pollTaskStatus(taskId, onUpdate, onComplete) {
 
             attempts++;
             if (attempts < maxAttempts) {
-                setTimeout(poll, 5000); // 每5秒轮询一次
+                setTimeout(poll, 1000); // 每1秒轮询一次（提高实时性）
             } else {
                 if (onComplete) {
                     onComplete({ status: 'timeout', error: '任务超时' });
