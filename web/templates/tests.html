@@ -450,9 +450,35 @@ async function loadProducts() {
         // 更新选择计数
         updateSelectedCount();
         updateTestEstimate();
+
+        // 检查URL参数，自动选择商品
+        checkUrlParams();
     } catch (error) {
         console.error('加载商品失败:', error);
         utils.showToast('加载商品列表失败', 'error');
+    }
+}
+
+// 检查URL参数，自动选择商品
+function checkUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product_id');
+
+    if (productId) {
+        // 找到对应商品
+        const product = products.find(p => p.id === productId || String(p.id) === productId);
+        if (product) {
+            // 切换到单个商品模式
+            document.getElementById('scope-single').checked = true;
+            updateTestScope();
+
+            // 自动选择该商品
+            selectSingleProduct(product.id);
+
+            utils.showToast(`已自动选择商品: ${product.name}`, 'info');
+        } else {
+            utils.showToast(`未找到商品ID: ${productId}`, 'warning');
+        }
     }
 }
 

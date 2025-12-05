@@ -290,20 +290,21 @@ class ProductCrawler:
         """通过 Shopify JSON API 发现商品
 
         Args:
-            collection_path: 分类路径
+            collection_path: 分类路径，例如 '/collections/electric-bikes'
             limit: 限制抓取商品数量
 
         Returns:
             Product 对象列表
         """
-        # 构建 JSON API URL
-        json_url = f"{self.base_url}{collection_path}.json"
+        # 构建正确的 Shopify JSON API URL
+        # 格式: /collections/{handle}/products.json (不是 /collections/{handle}.json)
+        json_url = f"{self.base_url}{collection_path}/products.json"
         products = []
         page = 1
 
         while True:
             # Shopify JSON API 分页参数
-            params = {'page': page}
+            params = {'page': page, 'limit': 250}  # Shopify 最多支持每页250个商品
             if limit and len(products) >= limit:
                 break
 
@@ -313,7 +314,7 @@ class ProductCrawler:
 
             data = response.json()
 
-            # Shopify 返回格式: {"collection": {...}, "products": [...]}
+            # Shopify 返回格式: {"products": [...]}
             if 'products' not in data or not data['products']:
                 break
 
@@ -325,8 +326,8 @@ class ProductCrawler:
                 if product:
                     products.append(product)
 
-            # 如果返回商品数量少于预期，说明已到最后一页
-            if len(data['products']) < 30:  # Shopify 默认每页 30 个商品
+            # 如果返回商品数量少于请求的limit，说明已到最后一页
+            if len(data['products']) < 250:
                 break
 
             page += 1

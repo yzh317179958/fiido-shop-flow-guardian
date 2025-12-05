@@ -83,9 +83,9 @@ function formatDuration(seconds) {
 // 工具函数：获取优先级标签
 function getPriorityBadge(priority) {
     const badges = {
-        'P0': '<span class="badge bg-danger">P0</span>',
-        'P1': '<span class="badge bg-warning">P1</span>',
-        'P2': '<span class="badge bg-info">P2</span>'
+        'P0': '<span class="badge bg-danger" title="核心产品 - 整车/电动车">整车</span>',
+        'P1': '<span class="badge bg-warning" title="电池/充电器/电机">重要配件</span>',
+        'P2': '<span class="badge bg-info" title="其他配件">普通配件</span>'
     };
     return badges[priority] || '<span class="badge bg-secondary">未知</span>';
 }
