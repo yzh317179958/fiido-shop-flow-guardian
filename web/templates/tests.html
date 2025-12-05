@@ -227,6 +227,33 @@ let currentTaskId = null;
 let testStartTime = null;
 let timerInterval = null;
 
+// 🔧 新增: 测试步骤预定义（与后端scripts/run_product_test.py保持一致）
+const QUICK_TEST_STEPS = [
+    { number: 1, name: "页面访问", description: "访问商品页面并检查页面是否正常加载" },
+    { number: 2, name: "商品信息显示", description: "验证商品标题、价格等核心信息是否正确显示" },
+    { number: 3, name: "添加购物车", description: "点击添加购物车按钮，验证能否成功加入" },
+    { number: 4, name: "购物车验证", description: "检查购物车中是否有新增商品" },
+    { number: 5, name: "支付流程", description: "访问购物车页面，验证Checkout按钮是否可用" }
+];
+
+const FULL_TEST_STEPS = [
+    { number: 1, name: "页面访问", description: "访问商品页面并等待完全加载" },
+    { number: 2, name: "页面结构检测", description: "检查页面基础DOM结构是否完整" },
+    { number: 3, name: "商品标题验证", description: "验证商品标题显示是否正确" },
+    { number: 4, name: "价格信息验证", description: "检查商品价格显示是否完整" },
+    { number: 5, name: "商品图片验证", description: "验证商品图片是否加载成功" },
+    { number: 6, name: "商品描述验证", description: "检查商品描述内容是否存在" },
+    { number: 7, name: "变体选择测试", description: "测试颜色/尺寸等变体选项功能" },
+    { number: 8, name: "数量选择测试", description: "测试商品数量增减功能" },
+    { number: 9, name: "添加购物车", description: "测试添加购物车功能" },
+    { number: 10, name: "购物车验证", description: "验证购物车商品数量变化" },
+    { number: 11, name: "相关推荐验证", description: "检查相关商品推荐是否显示" },
+    { number: 12, name: "支付流程验证", description: "验证从购物车到支付页面的完整流程" }
+];
+
+// 当前测试模式
+let currentTestMode = null;
+
 // 页面加载
 document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
@@ -371,6 +398,9 @@ async function runTestWithMode(mode) {
     const scope = document.getElementById('test-scope').value;
     const params = { test_mode: mode };
 
+    // 🔧 新增: 记录当前测试模式，用于预显示步骤
+    currentTestMode = mode;
+
     if (scope === 'priority') {
         params.priority = document.getElementById('test-priority').value;
     } else if (scope === 'category') {
@@ -427,6 +457,13 @@ function showTestExecutionCard() {
     updateElapsedTime();
     timerInterval = setInterval(updateElapsedTime, 1000);
 
+    // 🔧 修改: 不预先显示所有步骤，只显示空的步骤容器
+    // 步骤将在执行时逐步显示
+    const container = document.getElementById('test-steps-container');
+    const stepsList = document.getElementById('test-steps-list');
+    container.style.display = 'block';
+    stepsList.innerHTML = '<div class="text-muted text-center py-3"><span class="spinner-border spinner-border-sm me-2"></span>正在初始化测试...</div>';
+
     // 滚动到执行卡片
     card.scrollIntoView({ behavior: 'smooth' });
 }
@@ -459,9 +496,33 @@ function updateTestStatus(status) {
         }
     }
 
-    // 更新测试步骤显示
+    // 🔧 改进: 只显示后端返回的已执行步骤（执行一步显示一步）
+    // 不再预显示所有步骤，提升交互感
     if (status.test_steps && status.test_steps.length > 0) {
-        updateTestSteps(status.test_steps);
+        const predefinedSteps = currentTestMode === 'quick' ? QUICK_TEST_STEPS : FULL_TEST_STEPS;
+        const totalSteps = predefinedSteps.length;
+
+        // 只使用后端返回的步骤，补充预定义的描述信息
+        const displaySteps = status.test_steps.map(backendStep => {
+            const predefined = predefinedSteps.find(p => p.number === backendStep.number);
+            if (predefined) {
+                return {
+                    ...predefined,
+                    ...backendStep
+                };
+            }
+            return backendStep;
+        });
+
+        updateTestSteps(displaySteps);
+
+        // 根据已返回步骤计算进度
+        const completedSteps = displaySteps.filter(s =>
+            s.status === 'passed' || s.status === 'failed' || s.status === 'skipped'
+        ).length;
+        const percentage = Math.round((completedSteps / totalSteps) * 100);
+        progressBar.style.width = percentage + '%';
+        progressText.textContent = percentage + '%';
     }
 
     // 更新日志
@@ -532,6 +593,11 @@ function updateTestSteps(steps) {
         let issueDetailsHtml = '';
         if (step.issue_details) {
             const details = step.issue_details;
+            const stepId = `issue-${step.number}`;
+
+            // 🔧 新增: 生成自然语言的问题解释
+            const naturalExplanation = generateNaturalExplanation(details);
+
             const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
                 ? `<div class="mt-2"><strong>JavaScript错误:</strong>
                      <ul class="mb-0 mt-1">
@@ -542,14 +608,26 @@ function updateTestSteps(steps) {
                 : '';
 
             issueDetailsHtml = `
-                <div class="alert alert-warning mt-2 mb-0" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
-                    <h6 class="alert-heading mb-2">📋 问题详情</h6>
-                    <div class="small">
-                        <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
-                        <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
-                        <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
-                        <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
-                        ${jsErrorsHtml}
+                <div class="alert alert-danger mt-2 mb-0" style="background-color: #f8d7da; border-left: 4px solid #dc3545;">
+                    <div class="d-flex align-items-start">
+                        <span class="me-2">🐛</span>
+                        <div class="flex-grow-1">
+                            <strong>发现Bug:</strong> ${escapeHtml(naturalExplanation)}
+                            <div class="mt-2">
+                                <a class="text-decoration-none small" data-bs-toggle="collapse" href="#${stepId}" role="button" aria-expanded="false">
+                                    <i class="bi bi-chevron-down"></i> 查看详细技术信息
+                                </a>
+                            </div>
+                            <div class="collapse mt-2" id="${stepId}">
+                                <div class="card card-body bg-light small py-2">
+                                    <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
+                                    <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
+                                    <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
+                                    <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
+                                    ${jsErrorsHtml}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -629,8 +707,16 @@ function toggleTestLogs() {
 function onTestComplete(result) {
     hideTestExecutionCard();
 
-    if (result.status === 'completed') {
-        utils.showToast('测试执行完成！', 'success');
+    if (result.status === 'completed' || result.status === 'failed') {
+        // 🔧 修复: 统计失败步骤数来判定是否真正通过
+        const steps = result.test_steps || [];
+        const failedCount = steps.filter(s => s.status === 'failed').length;
+
+        if (failedCount > 0) {
+            utils.showToast('测试执行完成，存在失败步骤！', 'warning');
+        } else {
+            utils.showToast('测试执行完成！', 'success');
+        }
         // 显示详细结果
         showDetailedResults(result);
     } else {
@@ -643,28 +729,49 @@ function showDetailedResults(result) {
     const resultsCard = document.getElementById('current-test-results');
     resultsCard.style.display = 'block';
 
+    // 🔧 修复: 合并预定义步骤与后端返回的步骤，确保所有步骤都显示
+    const predefinedSteps = currentTestMode === 'quick' ? QUICK_TEST_STEPS : FULL_TEST_STEPS;
+    const backendSteps = result.test_steps || [];
+
+    // 合并步骤：以预定义步骤为基础，用后端返回的状态更新
+    const steps = predefinedSteps.map(predefined => {
+        const backendStep = backendSteps.find(s => s.number === predefined.number);
+        if (backendStep) {
+            return {
+                ...predefined,
+                ...backendStep
+            };
+        }
+        // 如果后端没有返回该步骤的结果，标记为pending
+        return { ...predefined, status: 'pending' };
+    });
+
     // 获取步骤统计
-    const steps = result.test_steps || [];
     const passedCount = steps.filter(s => s.status === 'passed').length;
     const failedCount = steps.filter(s => s.status === 'failed').length;
     const totalCount = steps.length;
 
     // 更新卡片头部状态
     const cardHeader = resultsCard.querySelector('.card-header');
-    if (result.status === 'completed' && failedCount === 0) {
+    if (failedCount === 0 && passedCount === totalCount) {
         cardHeader.classList.remove('bg-danger');
         cardHeader.classList.add('bg-success');
         cardHeader.querySelector('span').innerHTML = '<i class="bi bi-check-circle"></i> 测试完成 - 全部通过';
-    } else {
+    } else if (failedCount > 0) {
         cardHeader.classList.remove('bg-success');
         cardHeader.classList.add('bg-danger');
         cardHeader.querySelector('span').innerHTML = '<i class="bi bi-x-circle"></i> 测试完成 - 存在失败';
+    } else {
+        cardHeader.classList.remove('bg-success', 'bg-danger');
+        cardHeader.classList.add('bg-warning');
+        cardHeader.querySelector('span').innerHTML = '<i class="bi bi-exclamation-circle"></i> 测试完成 - 部分步骤未完成';
     }
 
     // 更新总体统计
-    document.getElementById('result-status-icon').textContent = result.status === 'completed' && failedCount === 0 ? '✓' : '✗';
-    document.getElementById('result-status').textContent = result.status === 'completed' && failedCount === 0 ? 'PASSED' : 'FAILED';
-    document.getElementById('result-status').className = result.status === 'completed' && failedCount === 0 ? 'mb-0 text-success' : 'mb-0 text-danger';
+    const allPassed = failedCount === 0 && passedCount === totalCount;
+    document.getElementById('result-status-icon').textContent = allPassed ? '✓' : '✗';
+    document.getElementById('result-status').textContent = allPassed ? 'PASSED' : 'FAILED';
+    document.getElementById('result-status').className = allPassed ? 'mb-0 text-success' : 'mb-0 text-danger';
 
     document.getElementById('result-duration').textContent = (result.result?.duration || 0).toFixed(2) + 's';
     document.getElementById('result-passed').textContent = passedCount;
@@ -699,10 +806,13 @@ function showDetailedResults(result) {
                     durationHtml = `<span class="step-duration ms-2">⏱ ${step.duration}s</span>`;
                 }
 
-                // 生成问题详情HTML（如果存在）
+                // 生成问题详情HTML（如果存在）- 使用与updateTestSteps相同的格式
                 let issueDetailsHtml = '';
                 if (step.issue_details) {
                     const details = step.issue_details;
+                    const resultStepId = `result-issue-${step.number}`;
+                    const naturalExplanation = generateNaturalExplanation(details);
+
                     const jsErrorsHtml = details.js_errors && details.js_errors.length > 0
                         ? `<div class="mt-2"><strong>JavaScript错误:</strong>
                              <ul class="mb-0 mt-1">
@@ -713,14 +823,26 @@ function showDetailedResults(result) {
                         : '';
 
                     issueDetailsHtml = `
-                        <div class="alert alert-warning mt-2 mb-0" style="background-color: #fff3cd; border-left: 4px solid #ffc107;">
-                            <h6 class="alert-heading mb-2">📋 问题详情</h6>
-                            <div class="small">
-                                <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
-                                <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
-                                <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
-                                <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
-                                ${jsErrorsHtml}
+                        <div class="alert alert-danger mt-2 mb-0" style="background-color: #f8d7da; border-left: 4px solid #dc3545;">
+                            <div class="d-flex align-items-start">
+                                <span class="me-2">🐛</span>
+                                <div class="flex-grow-1">
+                                    <strong>发现Bug:</strong> ${escapeHtml(naturalExplanation)}
+                                    <div class="mt-2">
+                                        <a class="text-decoration-none small" data-bs-toggle="collapse" href="#${resultStepId}" role="button" aria-expanded="false">
+                                            <i class="bi bi-chevron-down"></i> 查看详细技术信息
+                                        </a>
+                                    </div>
+                                    <div class="collapse mt-2" id="${resultStepId}">
+                                        <div class="card card-body bg-light small py-2">
+                                            <div class="mb-1"><strong>场景:</strong> ${escapeHtml(details.scenario || 'N/A')}</div>
+                                            <div class="mb-1"><strong>操作:</strong> ${escapeHtml(details.operation || 'N/A')}</div>
+                                            <div class="mb-1"><strong>问题:</strong> ${escapeHtml(details.problem || 'N/A')}</div>
+                                            <div class="mb-1"><strong>根因:</strong> ${escapeHtml(details.root_cause || 'N/A')}</div>
+                                            ${jsErrorsHtml}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -779,6 +901,71 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+// 🔧 生成自然语言的问题解释（包含具体的网页、操作、问题描述）
+function generateNaturalExplanation(details) {
+    if (!details) return '未知问题';
+
+    const scenario = details.scenario || '';
+    const operation = details.operation || '';
+    const problem = details.problem || '';
+    const root_cause = details.root_cause || '';
+
+    // 构建具体的描述
+    let explanation = '';
+
+    // 1. 在哪个网页
+    let pageInfo = '';
+    if (scenario.includes('购物车')) {
+        pageInfo = '在购物车页面（fiido.com/cart）';
+    } else if (scenario.includes('商品')) {
+        pageInfo = '在商品详情页';
+    } else if (scenario.includes('支付') || scenario.includes('Checkout')) {
+        pageInfo = '在支付流程中';
+    }
+
+    // 2. 执行什么操作
+    let actionInfo = '';
+    if (operation.includes('加号') || operation.includes('增加')) {
+        actionInfo = '点击商品数量"+"按钮';
+    } else if (operation.includes('减号') || operation.includes('减少')) {
+        actionInfo = '点击商品数量"-"按钮';
+    } else if (operation.includes('Checkout') || operation.includes('支付')) {
+        actionInfo = '点击结账按钮';
+    } else if (operation) {
+        actionInfo = operation;
+    }
+
+    // 3. 出现什么问题
+    let problemInfo = '';
+    if (problem.includes('数量未发生变化')) {
+        problemInfo = '商品数量没有变化，按钮点击无效';
+    } else if (problem.includes('JavaScript错误')) {
+        problemInfo = '页面出现JavaScript错误';
+    } else if (problem) {
+        problemInfo = problem;
+    }
+
+    // 组合成完整的描述
+    if (pageInfo && actionInfo && problemInfo) {
+        explanation = `${pageInfo}，用户${actionInfo}时，${problemInfo}。`;
+    } else if (scenario && problem) {
+        explanation = `${scenario}时，${problem}。`;
+    } else if (problem) {
+        explanation = problem;
+    } else {
+        explanation = '测试过程中发现异常。';
+    }
+
+    // 添加影响说明
+    if (root_cause.includes('购物车') || scenario.includes('购物车')) {
+        explanation += ' 这会影响用户修改购买数量的操作。';
+    } else if (root_cause.includes('Checkout') || scenario.includes('支付')) {
+        explanation += ' 这是高优先级问题，可能导致用户无法完成购买。';
+    }
+
+    return explanation;
 }
 </script>
 {% endblock %}

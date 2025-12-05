@@ -215,11 +215,17 @@ class ProductTester:
         # 汇总结果
         passed_count = sum(1 for step in self.steps if step.status == "passed")
         failed_count = sum(1 for step in self.steps if step.status == "failed")
+        skipped_count = sum(1 for step in self.steps if step.status == "skipped")
+
+        # 🔧 修复: 根据失败步骤数量判定整体测试结果
+        # 只要有任何一个步骤失败,整体测试就判定为失败
+        if failed_count > 0:
+            result["status"] = "failed"
 
         logger.info("=" * 70)
         logger.info("测试完成")
         logger.info(f"总耗时: {result['duration']:.2f}s")
-        logger.info(f"步骤统计: {passed_count} 通过, {failed_count} 失败")
+        logger.info(f"步骤统计: {passed_count} 通过, {failed_count} 失败, {skipped_count} 跳过")
         logger.info(f"最终结果: {result['status'].upper()}")
         logger.info("=" * 70)
 
@@ -982,94 +988,92 @@ class ProductTester:
                 bug_details = None
 
                 try:
-                    # 🔧 改进2: 使用更广泛的选择器查找数量输入框
-                    qty_input_selectors = [
-                        "input[name*='quantity']",
-                        "input[name*='updates']",
-                        "input[name*='qty']",
-                        "input[type='number']",
-                        ".cart-item__quantity input",
-                        ".cart__item input[type='number']",
-                        "cart-items input[type='number']",
-                        "cart-remove-button input",  # Shopify 2.0可能使用的结构
-                        "quantity-input input"
-                    ]
+                    # 🎯 新策略: 通过DOM结构查找购物车元素
+                    # 因为直接查找input和button可能失败,改为查找商品行
+                    logger.info("查找购物车商品行...")
 
-                    cart_qty_input = None
-                    for selector in qty_input_selectors:
-                        cart_qty_input = await self.page.query_selector(selector)
-                        if cart_qty_input:
-                            logger.info(f"✓ 找到数量输入框: {selector}")
+                    # 查找商品行(跳过表头)
+                    cart_rows = await self.page.query_selector_all("tr")
+
+                    test_row = None
+                    for i, row in enumerate(cart_rows):
+                        # 检查是否包含button元素
+                        buttons = await row.query_selector_all("button, a")
+                        if len(buttons) > 0:
+                            test_row = row
+                            logger.info(f"✓ 找到购物车商品行(第{i+1}个tr,包含{len(buttons)}个button/a)")
                             break
 
-                    if cart_qty_input:
-                        current_qty = await cart_qty_input.get_attribute("value")
-                        logger.info(f"📊 购物车商品当前数量: {current_qty}")
+                    if not test_row:
+                        logger.info("ℹ️  购物车页面未找到商品行")
+                    else:
+                        # 在商品行内查找所有button/a元素
+                        buttons_in_row = await test_row.query_selector_all("button, a")
 
-                        # 🔧 改进3: 使用更广泛的加号按钮选择器
-                        plus_selectors = [
-                            "button[name='plus']",
-                            "button.cart-item__quantity-plus",
-                            "button:has-text('+')",
-                            ".quantity__button--plus",
-                            "button[aria-label*='Increase']",
-                            "button[aria-label*='增加']",
-                            ".quantity-selector button:has-text('+')",
-                            "quantity-input button[name='plus']",
-                            "cart-items button[name='plus']"
-                        ]
-
+                        # 查找加号按钮
                         plus_button = None
-                        for selector in plus_selectors:
-                            plus_button = await self.page.query_selector(selector)
-                            if plus_button and await plus_button.is_visible():
-                                logger.info(f"✓ 找到加号按钮: {selector}")
-                                break
-                            plus_button = None
+                        for btn in buttons_in_row:
+                            try:
+                                if await btn.is_visible():
+                                    inner_html = await btn.inner_html()
+                                    btn_name = await btn.get_attribute("name")
+
+                                    # 检查是否是加号按钮
+                                    if (inner_html and ('plus' in inner_html.lower() or '+' in inner_html)) or \
+                                       (btn_name and 'plus' in btn_name.lower()):
+                                        plus_button = btn
+                                        logger.info("✓ 找到加号按钮(DOM内包含plus或+)")
+                                        break
+                            except:
+                                continue
 
                         if plus_button:
-                            # 尝试点击加号按钮
+                            # 🖱️  测试点击加号按钮
                             logger.info("🖱️  测试点击加号按钮...")
 
-                            # 记录点击前的JavaScript错误数量
+                            # 尝试获取当前数量
+                            cart_qty_input = await self.page.query_selector("input[type='number']")
+                            current_qty = None
+                            if cart_qty_input:
+                                current_qty = await cart_qty_input.get_attribute("value")
+                                logger.info(f"📊 当前数量: {current_qty}")
+
                             js_errors_before_click = len(self.js_errors)
 
                             try:
                                 await plus_button.click(timeout=2000)
-                                await self.page.wait_for_timeout(1500)  # 等待UI更新
+                                await self.page.wait_for_timeout(1500)
 
                                 # 检查数量是否变化
-                                new_qty = await cart_qty_input.get_attribute("value")
+                                new_qty = None
+                                if cart_qty_input:
+                                    new_qty = await cart_qty_input.get_attribute("value")
 
-                                # 检查是否有新的JavaScript错误
                                 new_js_errors = self.js_errors[js_errors_before_click:]
                                 new_console_errors = self.console_errors[console_errors_before:]
 
-                                if int(new_qty) > int(current_qty):
+                                if current_qty and new_qty and int(new_qty) > int(current_qty):
                                     logger.info(f"✓ 数量增加成功: {current_qty} -> {new_qty}")
                                 else:
-                                    # 🚨 关键原则: UI有加号按钮 + 点击后数量不变 = Bug!
-                                    # 不管有没有JS错误,只要UI提供了功能却不工作,就是Bug
+                                    # 🚨 Bug检测!
                                     cart_bug_detected = True
 
                                     if new_js_errors or new_console_errors:
-                                        # 有JS错误的Bug
                                         bug_details = {
                                             "scenario": "用户在购物车页面尝试调整商品数量",
-                                            "operation": f"点击数量加号按钮，期望数量从 {current_qty} 增加",
-                                            "problem": f"数量未发生变化（保持为 {new_qty}），同时触发了JavaScript错误",
-                                            "root_cause": "购物车UI更新逻辑存在Bug：代码尝试访问不存在的DOM元素（querySelector返回null），导致数量更新失败",
+                                            "operation": f"点击数量加号按钮{', 期望数量从 ' + current_qty + ' 增加' if current_qty else ''}",
+                                            "problem": f"数量未发生变化{' (保持为 ' + new_qty + ')' if new_qty else ''},同时触发了JavaScript错误",
+                                            "root_cause": "购物车UI更新逻辑存在Bug：" + (new_js_errors[0][:100] if new_js_errors else "未知错误"),
                                             "js_errors": new_js_errors + new_console_errors
                                         }
                                         logger.info(f"⚠️  检测到购物车Bug: 数量未变化且有JS错误")
-                                        for err in new_js_errors[:3]:  # 只显示前3个错误
+                                        for err in new_js_errors[:3]:
                                             logger.info(f"     JS错误: {err[:100]}")
                                     else:
-                                        # 无JS错误的Bug(可能是逻辑Bug或事件绑定失败)
                                         bug_details = {
                                             "scenario": "用户在购物车页面尝试调整商品数量",
-                                            "operation": f"点击数量加号按钮，期望数量从 {current_qty} 增加",
-                                            "problem": f"数量未发生变化（保持为 {new_qty}），UI按钮存在但功能不工作",
+                                            "operation": f"点击数量加号按钮{', 期望数量从 ' + current_qty + ' 增加' if current_qty else ''}",
+                                            "problem": f"数量未发生变化{' (保持为 ' + new_qty + ')' if new_qty else ''},UI按钮存在但功能不工作",
                                             "root_cause": "购物车数量调整功能存在Bug：可能是事件绑定失败、逻辑错误或DOM更新失败",
                                             "js_errors": []
                                         }
@@ -1078,9 +1082,7 @@ class ProductTester:
                             except Exception as e:
                                 logger.info(f"⚠️  点击加号按钮失败: {str(e)[:50]}")
                         else:
-                            logger.info("ℹ️  购物车页面未找到数量调整按钮（可能是网站设计）")
-                    else:
-                        logger.info("ℹ️  购物车页面未找到数量输入框")
+                            logger.info("ℹ️  购物车商品行内未找到加号按钮")
 
                 except Exception as e:
                     logger.info(f"⚠️  购物车功能测试异常: {e}")

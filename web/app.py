@@ -90,7 +90,10 @@ def run_command(command, task_id=None):
                 if remaining_stdout:
                     stdout_lines.append(remaining_stdout)
                     if task_id:
-                        running_tasks[task_id]['logs'].extend(remaining_stdout.splitlines())
+                        # 🔧 修复: 解析剩余日志中的每一行
+                        for remaining_line in remaining_stdout.splitlines():
+                            running_tasks[task_id]['logs'].append(remaining_line)
+                            parse_progress_line(remaining_line, task_id)
                 if remaining_stderr:
                     stderr_lines.append(remaining_stderr)
                 break
@@ -218,6 +221,64 @@ def parse_progress_line(line, task_id):
         steps = running_tasks[task_id]['test_steps']
         if steps:
             steps[-1]['error'] = error
+        return
+
+    # 🔧 新增: 解析问题详情 (📋 问题详情 后面的各行)
+    # 解析场景
+    match = re.search(r'场景:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        scenario = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            if 'issue_details' not in steps[-1]:
+                steps[-1]['issue_details'] = {}
+            steps[-1]['issue_details']['scenario'] = scenario
+        return
+
+    # 解析操作
+    match = re.search(r'操作:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        operation = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            if 'issue_details' not in steps[-1]:
+                steps[-1]['issue_details'] = {}
+            steps[-1]['issue_details']['operation'] = operation
+        return
+
+    # 解析问题
+    match = re.search(r'问题:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        problem = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            if 'issue_details' not in steps[-1]:
+                steps[-1]['issue_details'] = {}
+            steps[-1]['issue_details']['problem'] = problem
+        return
+
+    # 解析根因
+    match = re.search(r'根因:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        root_cause = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            if 'issue_details' not in steps[-1]:
+                steps[-1]['issue_details'] = {}
+            steps[-1]['issue_details']['root_cause'] = root_cause
+        return
+
+    # 解析JS错误
+    match = re.search(r'JS错误:\s*(.+)', line)
+    if match and 'test_steps' in running_tasks[task_id]:
+        js_error = match.group(1).strip()
+        steps = running_tasks[task_id]['test_steps']
+        if steps:
+            if 'issue_details' not in steps[-1]:
+                steps[-1]['issue_details'] = {}
+            if 'js_errors' not in steps[-1]['issue_details']:
+                steps[-1]['issue_details']['js_errors'] = []
+            steps[-1]['issue_details']['js_errors'].append(js_error)
         return
 
     # 解析 "[1/10] Processing collection: xxx" (商品发现)
